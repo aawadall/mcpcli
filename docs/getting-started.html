@@ -1,0 +1,78 @@
+<section class="getting-started" id="getting-started">
+    <div class="container">
+        <h2 class="section-title">Getting Started</h2>
+        <p class="section-subtitle">Get up and running in minutes</p>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Install</h3>
+                <p>Clone the repository and build the CLI:</p>
+                <div class="code-block">
+git clone https://github.com/aawadall/mcpcli.git
+cd mcpcli
+go build -o mcpcli ./cmd/mcpcli
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>Generate</h3>
+                <p>Create your MCP server project (non-interactive or interactive):</p>
+                <div class="code-block">
+# Non-interactive (all options specified)
+./mcpcli generate my-server --language golang --transport stdio --docker --examples
+
+# Interactive (missing options will prompt)
+./mcpcli generate
+                </div>
+                <p><strong>Flags:</strong></p>
+                <ul>
+                    <li><code>--name, -n</code> Project name</li>
+                    <li><code>--language, -l</code> Programming language (<code>golang</code>, <code>python</code>, <code>java</code>, <code>javascript</code>)</li>
+                    <li><code>--transport, -t</code> Transport method (<code>stdio</code>, <code>rest</code>, <code>websocket</code>)</li>
+                    <li><code>--docker, -d</code> Include Docker support</li>
+                    <li><code>--examples, -e</code> Include example resources and tools</li>
+                    <li><code>--output, -o</code> Output directory (default: project name)</li>
+                    <li><code>--foorce, -f</code> Overwrite existing directory <span style="color:#e53e3e">(note: flag is currently <code>--foorce</code> due to a typo)</span></li>
+                </ul>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>Develop</h3>
+                <p>Start building your MCP server:</p>
+                <div class="code-block">
+cd my-mcp-server
+go run cmd/server/main.go
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <h3>Test</h3>
+                <p>Validate your server works correctly:</p>
+                <div class="code-block">
+# Run all tests with config file
+./mcpcli test --config configs/mcp-config.json --all
+
+# Interactive mode (prompts for what to test)
+./mcpcli test
+                </div>
+                <p><strong>Flags:</strong></p>
+                <ul>
+                    <li><code>--config, -c</code> Path to MCP configuration file</li>
+                    <li><code>--all</code> Test all components (resources, tools, capabilities, init)</li>
+                    <li><code>--resources</code> Test resources</li>
+                    <li><code>--tools</code> Test tools</li>
+                    <li><code>--capabilities</code> Test capabilities</li>
+                    <li><code>--init</code> Test initialization</li>
+                    <li><code>--script, -f</code> Path to test script file</li>
+                </ul>
+            </div>
+        </div>
+        <div style="margin-top:2rem">
+            <h3>Global Flags</h3>
+            <ul>
+                <li><code>--verbose, -v</code> Enable verbose output</li>
+                <li><code>--quiet, -q</code> Suppress output</li>
+            </ul>
+        </div>
+    </div>
+</section> 

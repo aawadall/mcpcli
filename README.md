@@ -2,13 +2,16 @@
 
 A CLI tool to scaffold Model Context Protocol (MCP) server projects in Go and other languages. It generates ready-to-use MCP server templates with support for multiple transports, Docker, and example resources/tools.
 
+> Learn more about the Model Context Protocol at the [official introduction page](https://modelcontextprotocol.io/introduction).
+
 ## Features
 - Generate new MCP server projects with a single command
-- Supports multiple languages (currently: Go)
-- Choose transport method (currently: stdio)
+- Supports multiple languages (currently: Go, Python, Java, JavaScript)
+- Choose transport method (stdio, rest, websocket)
 - Optional Docker support
 - Example resources and tools included
 - Interactive and non-interactive modes
+- Test MCP server resources, tools, and capabilities
 
 ## Installation
 
@@ -20,28 +23,58 @@ cd mcpcli
 go build -o mcpcli ./cmd/mcpcli
 ```
 
+## Available Commands
+
+- `generate` (aliases: `gen`, `g`): Generate a new MCP server project
+- `test`: Test MCP server resources, tools, capabilities, and initialization
+
 ## Usage
 
-Generate a new MCP server project:
+### Generate a new MCP server project
 
 ```bash
 ./mcpcli generate my-server --language golang --transport stdio --docker --examples
 ```
 
-Or use interactive mode:
+Or use interactive mode (if required options are missing):
 
 ```bash
 ./mcpcli generate
 ```
 
-### Flags
+#### Generate Flags
 - `--name, -n`         Project name
-- `--language, -l`     Programming language (e.g., golang)
-- `--transport, -t`    Transport method (e.g., stdio)
+- `--language, -l`     Programming language (`golang`, `python`, `java`, `javascript`)
+- `--transport, -t`    Transport method (`stdio`, `rest`, `websocket`)
 - `--docker, -d`       Include Docker support
 - `--examples, -e`     Include example resources and tools
-- `--output, -o`       Output directory
-- `--force, -f`        Overwrite existing directory
+- `--output, -o`       Output directory (default: project name)
+- `--foorce, -f`       Overwrite existing directory (**note: flag is currently `--foorce` due to a typo**)
+
+### Test an MCP server
+
+```bash
+./mcpcli test --config configs/mcp-config.json --all
+```
+
+Or use interactive mode (if no flags are provided):
+
+```bash
+./mcpcli test
+```
+
+#### Test Flags
+- `--config, -c`         Path to MCP configuration file
+- `--all`                Test all components (resources, tools, capabilities, init)
+- `--resources`          Test resources
+- `--tools`              Test tools
+- `--capabilities`       Test capabilities
+- `--init`               Test initialization
+- `--script, -f`         Path to test script file
+
+### Global Flags
+- `--verbose, -v`   Enable verbose output
+- `--quiet, -q`     Suppress output
 
 ## Project Structure
 - `cmd/`         Entrypoint for the CLI
@@ -64,4 +97,9 @@ Contributions are welcome! Please open issues or pull requests.
 
 ## License
 
-MIT License 
+MIT License
+
+---
+
+## Further Reading
+- [Model Context Protocol Introduction](https://modelcontextprotocol.io/introduction) 
