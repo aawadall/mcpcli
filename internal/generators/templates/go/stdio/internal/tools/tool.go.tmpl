@@ -1,0 +1,22 @@
+package tools
+
+import "{{.ModuleName}}/pkg/mcp"
+
+// {{.Tool.Name}} tool
+type {{.Tool.Name}}Tool struct{}
+
+// New{{.Tool.Name}}Tool creates a new {{.Tool.Name}} tool
+func New{{.Tool.Name}}Tool() *{{.Tool.Name}}Tool {
+	return &{{.Tool.Name}}Tool{}
+}
+
+// Call executes the tool logic
+func (t *{{.Tool.Name}}Tool) Call(req mcp.Request) mcp.Response {
+	// TODO: Implement tool logic for {{.Tool.Name}}
+	return mcp.Response{
+		Result: map[string]interface{}{
+			"message": "Tool {{.Tool.Name}} executed",
+		},
+		ID: req.ID,
+	}
+} 

@@ -7,6 +7,7 @@ import (
 	"text/template"
 
 	"github.com/aawadall/mcpcli/internal/core"
+	"github.com/fatih/color"
 )
 
 // GoGenerator implements the Generator interface for Go projects
@@ -103,11 +104,59 @@ func (g *GoGenerator) generateFromTemplates(output string, data *core.TemplateDa
 		}
 	}
 
+	// Generate a dedicated Go file for each tool
+	for _, tool := range data.Config.Tools {
+		toolData := struct {
+			ModuleName string
+			Tool       core.Tool
+		}{
+			ModuleName: data.ModuleName,
+			Tool:       tool,
+		}
+		fileName := filepath.Join(output, "internal/tools", tool.Name+".go")
+		tmplPath := "templates/go/stdio/internal/tools/tool.go.tmpl"
+		if err := g.generateTemplate(tmplPath, fileName, toolData); err != nil {
+			return fmt.Errorf("failed to generate tool file for %s: %w", tool.Name, err)
+		}
+	}
+
+	// Generate a dedicated Go file for each resource
+	for _, resource := range data.Config.Resources {
+		resourceData := struct {
+			ModuleName string
+			Resource   core.Resource
+		}{
+			ModuleName: data.ModuleName,
+			Resource:   resource,
+		}
+		fileName := filepath.Join(output, "internal/resources", resource.Name+".go")
+		tmplPath := "templates/go/stdio/internal/resources/resource.go.tmpl"
+		if err := g.generateTemplate(tmplPath, fileName, resourceData); err != nil {
+			return fmt.Errorf("failed to generate resource file for %s: %w", resource.Name, err)
+		}
+	}
+
+	// Generate a dedicated Go file for each capability
+	for _, capability := range data.Config.Capabilities {
+		capabilityData := struct {
+			ModuleName string
+			Capability core.Capability
+		}{
+			ModuleName: data.ModuleName,
+			Capability: capability,
+		}
+		fileName := filepath.Join(output, "internal/capabilities", capability.Name+".go")
+		tmplPath := "templates/go/stdio/internal/capabilities/capability.go.tmpl"
+		if err := g.generateTemplate(tmplPath, fileName, capabilityData); err != nil {
+			return fmt.Errorf("failed to generate capability file for %s: %w", capability.Name, err)
+		}
+	}
+
 	return nil
 }
 
 // generateTemplate generates a single file from a template
-func (g *GoGenerator) generateTemplate(templatePath, outputPath string, data *core.TemplateData) error {
+func (g *GoGenerator) generateTemplate(templatePath, outputPath string, data interface{}) error {
 	// Read template content
 	templateContent, err := TemplatesFS.ReadFile(templatePath)
 	if err != nil {
@@ -132,5 +181,6 @@ func (g *GoGenerator) generateTemplate(templatePath, outputPath string, data *co
 		return fmt.Errorf("failed to execute template %s: %w", templatePath, err)
 	}
 
+	color.Green("Created file: %s", outputPath)
 	return nil
 }

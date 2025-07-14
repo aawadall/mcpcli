@@ -13,6 +13,10 @@ type ProjectConfig struct {
 	Description string    `json:"description,omitempty"`
 	Version     string    `json:"version"`
 	CreatedAt   time.Time `json:"created_at"`
+
+	Tools        []Tool       `json:"tools,omitempty"`
+	Resources    []Resource   `json:"resources,omitempty"`
+	Capabilities []Capability `json:"capabilities,omitempty"`
 }
 
 // NewProjectConfig creates a new project configuration with defaults
