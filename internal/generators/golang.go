@@ -75,9 +75,11 @@ func (g *GoGenerator) generateFromTemplates(output string, data *core.TemplateDa
 		"templates/go/stdio/internal/resources/filesystem.go.tmpl": "internal/resources/filesystem.go",
 		"templates/go/stdio/internal/tools/calculator.go.tmpl":     "internal/tools/calculator.go",
 		"templates/go/stdio/pkg/mcp/client.go.tmpl":                "pkg/mcp/client.go",
-		"templates/go/stdio/README.md.tmpl":                        "README.md",
-		"templates/go/stdio/configs/mcp-config.json.tmpl":          "configs/mcp-config.json",
-		"templates/go/stdio/examples/example.go.tmpl":              "examples/example.go",
+		"templates/go/stdio/pkg/mcp/mcp.go.tmpl":                   "pkg/mcp/mcp.go",
+
+		"templates/go/stdio/README.md.tmpl":               "README.md",
+		"templates/go/stdio/configs/mcp-config.json.tmpl": "configs/mcp-config.json",
+		"templates/go/stdio/examples/example.go.tmpl":     "examples/example.go",
 	}
 
 	// Generate each template
@@ -90,7 +92,7 @@ func (g *GoGenerator) generateFromTemplates(output string, data *core.TemplateDa
 	// Generate Docker files if requested
 	if data.Config.Docker {
 		dockerTemplates := map[string]string{
-			"templates/go/stdio/Dockerfile.tmpl":    "Dockerfile",
+			"templates/go/stdio/Dockerfile.tmpl":   "Dockerfile",
 			"templates/go/stdio/dockerignore.tmpl": ".dockerignore",
 		}
 
