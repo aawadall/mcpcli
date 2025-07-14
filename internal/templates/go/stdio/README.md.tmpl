@@ -1,4 +1,4 @@
-# {{.ProjectName}} MCP Server
+# {{.Config.Name}} MCP Server
 
 This is a Model Context Protocol (MCP) server implemented in Go.
 
@@ -46,8 +46,8 @@ go run cmd/server/main.go
 To run the server in a Docker container, use the following commands:
 
 ```bash
-docker build -t {{.ProjectName}}-mcp-server .
-docker run {{.ProjectName}}-mcp-server
+docker build -t {{.Config.Name}}-mcp-server .
+docker run {{.Config.Name}}-mcp-server
 ```
 
 ## Examples

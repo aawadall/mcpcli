@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	fmt.Fprintf(os.Stderr, "Starting {{.ProjectName}} MCP Server (stdio mode)...\n")
+	fmt.Fprintf(os.Stderr, "Starting {{.Config.Name}} MCP Server (stdio mode)...\n")
 	
 	server := mcp.NewServer()
 	handler := handlers.NewHandler()
