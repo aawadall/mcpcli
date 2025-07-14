@@ -1,0 +1,154 @@
+package handlers
+
+import (
+	"encoding/json"
+	"fmt"
+	"{{.ModuleName}}/pkg/mcp"
+)
+
+// Handler represents the MCP request handler
+type Handler struct{}
+
+// NewHandler creates a new MCP handler
+func NewHandler() *Handler {
+	return &Handler{}
+}
+
+// HandleListResources handles the resources list request
+func (h *Handler) HandleListResources(req mcp.Request) mcp.Response {
+	// Example implementation - replace with your actual resources
+	resources := []map[string]interface{}{
+		{
+			"uri":  "example/resource1",
+			"name": "Example Resource 1",
+			"type": "text",
+		},
+		{
+			"uri":  "example/resource2", 
+			"name": "Example Resource 2",
+			"type": "json",
+		},
+	}
+	
+	return mcp.Response{
+		Result: map[string]interface{}{
+			"resources": resources,
+		},
+		ID: req.ID,
+	}
+}
+
+// HandleReadResource handles the resource read request
+func (h *Handler) HandleReadResource(req mcp.Request) mcp.Response {
+	resourceURI, ok := req.Params["uri"].(string)
+	if !ok {
+		return mcp.Response{
+			Error: &mcp.Error{
+				Code:    -32602,
+				Message: "Invalid params: uri is required",
+			},
+			ID: req.ID,
+		}
+	}
+
+	// Example implementation - replace with your actual resource reading logic
+	resource := map[string]interface{}{
+		"uri":  resourceURI,
+		"name": fmt.Sprintf("Resource: %s", resourceURI),
+		"type": "text",
+		"data": fmt.Sprintf("This is the content of resource: %s", resourceURI),
+	}
+
+	return mcp.Response{
+		Result: resource,
+		ID:     req.ID,
+	}
+}
+
+// HandleListTools handles the tools list request
+func (h *Handler) HandleListTools(req mcp.Request) mcp.Response {
+	// Example implementation - replace with your actual tools
+	tools := []map[string]interface{}{
+		{
+			"name":        "example_tool",
+			"description": "An example tool that demonstrates MCP functionality",
+			"inputSchema": map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"message": map[string]interface{}{
+						"type":        "string",
+						"description": "The message to process",
+					},
+				},
+				"required": []string{"message"},
+			},
+		},
+	}
+
+	return mcp.Response{
+		Result: map[string]interface{}{
+			"tools": tools,
+		},
+		ID: req.ID,
+	}
+}
+
+// HandleCallTool handles the tool call request
+func (h *Handler) HandleCallTool(req mcp.Request) mcp.Response {
+	toolName, ok := req.Params["name"].(string)
+	if !ok {
+		return mcp.Response{
+			Error: &mcp.Error{
+				Code:    -32602,
+				Message: "Invalid params: name is required",
+			},
+			ID: req.ID,
+		}
+	}
+
+	arguments, ok := req.Params["arguments"].(map[string]interface{})
+	if !ok {
+		return mcp.Response{
+			Error: &mcp.Error{
+				Code:    -32602,
+				Message: "Invalid params: arguments is required",
+			},
+			ID: req.ID,
+		}
+	}
+
+	// Example implementation - replace with your actual tool logic
+	switch toolName {
+	case "example_tool":
+		message, ok := arguments["message"].(string)
+		if !ok {
+			return mcp.Response{
+				Error: &mcp.Error{
+					Code:    -32602,
+					Message: "Invalid arguments: message is required",
+				},
+				ID: req.ID,
+			}
+		}
+
+		result := map[string]interface{}{
+			"tool":    toolName,
+			"message": fmt.Sprintf("Processed: %s", message),
+			"status":  "success",
+		}
+
+		return mcp.Response{
+			Result: result,
+			ID:     req.ID,
+		}
+
+	default:
+		return mcp.Response{
+			Error: &mcp.Error{
+				Code:    -32601,
+				Message: fmt.Sprintf("Tool not found: %s", toolName),
+			},
+			ID: req.ID,
+		}
+	}
+}

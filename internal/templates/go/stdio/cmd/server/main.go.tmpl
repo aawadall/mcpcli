@@ -1,0 +1,51 @@
+package main
+
+import (
+	"bufio"
+	"encoding/json"
+	"fmt"
+	"log"
+	"os"
+
+	"{{.ModuleName}}/internal/handlers"
+	"{{.ModuleName}}/pkg/mcp"
+)
+
+func main() {
+	fmt.Fprintf(os.Stderr, "Starting {{.ProjectName}} MCP Server (stdio mode)...\n")
+	
+	server := mcp.NewServer()
+	handler := handlers.NewHandler()
+
+	// Register handlers
+	server.RegisterResourceHandler(handler.HandleListResources)
+	server.RegisterResourceReadHandler(handler.HandleReadResource)
+	server.RegisterToolHandler(handler.HandleListTools)
+	server.RegisterCallToolHandler(handler.HandleCallTool)
+
+	// Start stdio server
+	scanner := bufio.NewScanner(os.Stdin)
+	for scanner.Scan() {
+		line := scanner.Text()
+		
+		var request mcp.Request
+		if err := json.Unmarshal([]byte(line), &request); err != nil {
+			log.Printf("Failed to parse request: %v", err)
+			continue
+		}
+
+		response := server.HandleRequest(request)
+		
+		responseJSON, err := json.Marshal(response)
+		if err != nil {
+			log.Printf("Failed to marshal response: %v", err)
+			continue
+		}
+
+		fmt.Println(string(responseJSON))
+	}
+
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
+	}
+}

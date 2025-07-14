@@ -1,0 +1,79 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"{{.ModuleName}}/pkg/mcp"
+	"{{.ModuleName}}/internal/handlers"
+)
+
+func main() {
+	fmt.Println("{{.ProjectName}} MCP Server Example")
+	fmt.Println("==================================")
+
+	server := mcp.NewServer()
+	handler := handlers.NewHandler()
+
+	// Register handlers
+	server.RegisterResourceHandler(handler.HandleListResources)
+	server.RegisterResourceReadHandler(handler.HandleReadResource)
+	server.RegisterToolHandler(handler.HandleListTools)
+	server.RegisterCallToolHandler(handler.HandleCallTool)
+
+	// Example 1: List Resources
+	fmt.Println("\n1. Listing Resources:")
+	req := mcp.Request{Method: "resources/list", ID: 1}
+	resp := server.HandleRequest(req)
+	printResponse(resp)
+
+	// Example 2: Read a Resource
+	fmt.Println("\n2. Reading a Resource:")
+	req = mcp.Request{
+		Method: "resources/read", 
+		Params: map[string]interface{}{"uri": "example/resource1"},
+		ID:     2,
+	}
+	resp = server.HandleRequest(req)
+	printResponse(resp)
+
+	// Example 3: List Tools
+	fmt.Println("\n3. Listing Tools:")
+	req = mcp.Request{Method: "tools/list", ID: 3}
+	resp = server.HandleRequest(req)
+	printResponse(resp)
+
+	// Example 4: Call a Tool
+	fmt.Println("\n4. Calling a Tool:")
+	req = mcp.Request{
+		Method: "tools/call",
+		Params: map[string]interface{}{
+			"name":      "example_tool",
+			"arguments": map[string]interface{}{"message": "Hello from example!"},
+		},
+		ID: 4,
+	}
+	resp = server.HandleRequest(req)
+	printResponse(resp)
+
+	// Example 5: Error handling
+	fmt.Println("\n5. Error Example (Invalid Tool):")
+	req = mcp.Request{
+		Method: "tools/call",
+		Params: map[string]interface{}{
+			"name":      "nonexistent_tool",
+			"arguments": map[string]interface{}{"message": "This will fail"},
+		},
+		ID: 5,
+	}
+	resp = server.HandleRequest(req)
+	printResponse(resp)
+}
+
+func printResponse(resp mcp.Response) {
+	jsonData, err := json.MarshalIndent(resp, "", "  ")
+	if err != nil {
+		fmt.Printf("Error marshaling response: %v\n", err)
+		return
+	}
+	fmt.Println(string(jsonData))
+} 

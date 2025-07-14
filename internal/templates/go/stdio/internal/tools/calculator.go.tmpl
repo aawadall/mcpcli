@@ -1,0 +1,198 @@
+package tools
+
+import (
+	"fmt"
+	"math"
+	"strconv"
+	"{{.ModuleName}}/pkg/mcp"
+)
+
+// Calculator represents a calculator tool
+type Calculator struct{}
+
+// NewCalculator creates a new calculator
+func NewCalculator() *Calculator {
+	return &Calculator{}
+}
+
+// Calculate performs mathematical calculations
+func (c *Calculator) Calculate(req mcp.Request) mcp.Response {
+	operation, ok := req.Params["operation"].(string)
+	if !ok {
+		return mcp.Response{
+			Error: &mcp.Error{
+				Code:    -32602,
+				Message: "Operation parameter is required",
+			},
+			ID: req.ID,
+		}
+	}
+
+	// Get operands
+	operands, ok := req.Params["operands"].([]interface{})
+	if !ok {
+		return mcp.Response{
+			Error: &mcp.Error{
+				Code:    -32602,
+				Message: "Operands parameter is required",
+			},
+			ID: req.ID,
+		}
+	}
+
+	// Convert operands to float64
+	var numbers []float64
+	for _, operand := range operands {
+		switch v := operand.(type) {
+		case float64:
+			numbers = append(numbers, v)
+		case string:
+			if num, err := strconv.ParseFloat(v, 64); err == nil {
+				numbers = append(numbers, num)
+			} else {
+				return mcp.Response{
+					Error: &mcp.Error{
+						Code:    -32602,
+						Message: fmt.Sprintf("Invalid operand: %s", v),
+					},
+					ID: req.ID,
+				}
+			}
+		default:
+			return mcp.Response{
+				Error: &mcp.Error{
+					Code:    -32602,
+					Message: fmt.Sprintf("Invalid operand type: %T", operand),
+				},
+				ID: req.ID,
+			}
+		}
+	}
+
+	if len(numbers) == 0 {
+		return mcp.Response{
+			Error: &mcp.Error{
+				Code:    -32602,
+				Message: "At least one operand is required",
+			},
+			ID: req.ID,
+		}
+	}
+
+	var result float64
+	var err error
+
+	switch operation {
+	case "add":
+		result = c.add(numbers...)
+	case "subtract":
+		result = c.subtract(numbers...)
+	case "multiply":
+		result = c.multiply(numbers...)
+	case "divide":
+		result, err = c.divide(numbers...)
+	case "power":
+		if len(numbers) != 2 {
+			return mcp.Response{
+				Error: &mcp.Error{
+					Code:    -32602,
+					Message: "Power operation requires exactly 2 operands",
+				},
+				ID: req.ID,
+			}
+		}
+		result = math.Pow(numbers[0], numbers[1])
+	case "sqrt":
+		if len(numbers) != 1 {
+			return mcp.Response{
+				Error: &mcp.Error{
+					Code:    -32602,
+					Message: "Square root operation requires exactly 1 operand",
+				},
+				ID: req.ID,
+			}
+		}
+		if numbers[0] < 0 {
+			return mcp.Response{
+				Error: &mcp.Error{
+					Code:    -32602,
+					Message: "Cannot calculate square root of negative number",
+				},
+				ID: req.ID,
+			}
+		}
+		result = math.Sqrt(numbers[0])
+	default:
+		return mcp.Response{
+			Error: &mcp.Error{
+				Code:    -32601,
+				Message: fmt.Sprintf("Unsupported operation: %s", operation),
+			},
+			ID: req.ID,
+		}
+	}
+
+	if err != nil {
+		return mcp.Response{
+			Error: &mcp.Error{
+				Code:    -32603,
+				Message: err.Error(),
+			},
+			ID: req.ID,
+		}
+	}
+
+	return mcp.Response{
+		Result: map[string]interface{}{
+			"operation": operation,
+			"operands":  numbers,
+			"result":    result,
+		},
+		ID: req.ID,
+	}
+}
+
+// add adds multiple numbers
+func (c *Calculator) add(numbers ...float64) float64 {
+	result := 0.0
+	for _, num := range numbers {
+		result += num
+	}
+	return result
+}
+
+// subtract subtracts numbers from the first one
+func (c *Calculator) subtract(numbers ...float64) float64 {
+	if len(numbers) == 0 {
+		return 0
+	}
+	result := numbers[0]
+	for i := 1; i < len(numbers); i++ {
+		result -= numbers[i]
+	}
+	return result
+}
+
+// multiply multiplies multiple numbers
+func (c *Calculator) multiply(numbers ...float64) float64 {
+	result := 1.0
+	for _, num := range numbers {
+		result *= num
+	}
+	return result
+}
+
+// divide divides the first number by the rest
+func (c *Calculator) divide(numbers ...float64) (float64, error) {
+	if len(numbers) == 0 {
+		return 0, fmt.Errorf("no operands provided")
+	}
+	result := numbers[0]
+	for i := 1; i < len(numbers); i++ {
+		if numbers[i] == 0 {
+			return 0, fmt.Errorf("division by zero")
+		}
+		result /= numbers[i]
+	}
+	return result, nil
+} 

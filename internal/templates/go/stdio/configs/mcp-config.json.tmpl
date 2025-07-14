@@ -1,0 +1,22 @@
+{
+  "$schema": "https://schemas.modelcontextprotocol.org/server-config.json",
+  "name": "{{.ProjectName}}",
+  "version": "{{.Version}}",
+  "description": "{{.Description}}",
+  "author": "{{.Author}}",
+  "license": "MIT",
+  "transport": {
+    "type": "stdio"
+  },
+  "capabilities": {
+    "resources": {
+      "enabled": true
+    },
+    "tools": {
+      "enabled": true
+    },
+    "prompts": {
+      "enabled": false
+    }
+  }
+} 
