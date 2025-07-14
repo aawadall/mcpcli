@@ -1,0 +1,8 @@
+module {{.ModuleName}}
+
+go 1.22
+
+require (
+    github.com/gorilla/mux v1.8.0
+    {{if eq .Config.Transport "rest"}}github.com/gorilla/handlers v1.5.1{{end}}
+)

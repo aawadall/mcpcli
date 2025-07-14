@@ -69,15 +69,15 @@ func (g *GoGenerator) createDirectoryStructure(output string) error {
 func (g *GoGenerator) generateFromTemplates(output string, data *core.TemplateData) error {
 	// Define template files and their output paths
 	templates := map[string]string{
-		"internal/templates/go/stdio/go.mod.tmpl":                           "go.mod",
-		"internal/templates/go/stdio/cmd/server/main.go.tmpl":               "cmd/server/main.go",
-		"internal/templates/go/stdio/internal/handlers/mcp.go.tmpl":         "internal/handlers/mcp.go",
-		"internal/templates/go/stdio/internal/resources/filesystem.go.tmpl": "internal/resources/filesystem.go",
-		"internal/templates/go/stdio/internal/tools/calculator.go.tmpl":     "internal/tools/calculator.go",
-		"internal/templates/go/stdio/pkg/mcp/client.go.tmpl":                "pkg/mcp/client.go",
-		"internal/templates/go/stdio/README.md.tmpl":                        "README.md",
-		"internal/templates/go/stdio/configs/mcp-config.json.tmpl":          "configs/mcp-config.json",
-		"internal/templates/go/stdio/examples/example.go.tmpl":              "examples/example.go",
+		"templates/go/stdio/go.mod.tmpl":                           "go.mod",
+		"templates/go/stdio/cmd/server/main.go.tmpl":               "cmd/server/main.go",
+		"templates/go/stdio/internal/handlers/mcp.go.tmpl":         "internal/handlers/mcp.go",
+		"templates/go/stdio/internal/resources/filesystem.go.tmpl": "internal/resources/filesystem.go",
+		"templates/go/stdio/internal/tools/calculator.go.tmpl":     "internal/tools/calculator.go",
+		"templates/go/stdio/pkg/mcp/client.go.tmpl":                "pkg/mcp/client.go",
+		"templates/go/stdio/README.md.tmpl":                        "README.md",
+		"templates/go/stdio/configs/mcp-config.json.tmpl":          "configs/mcp-config.json",
+		"templates/go/stdio/examples/example.go.tmpl":              "examples/example.go",
 	}
 
 	// Generate each template
@@ -90,8 +90,8 @@ func (g *GoGenerator) generateFromTemplates(output string, data *core.TemplateDa
 	// Generate Docker files if requested
 	if data.Config.Docker {
 		dockerTemplates := map[string]string{
-			"internal/templates/go/stdio/Dockerfile.tmpl":    "Dockerfile",
-			"internal/templates/go/stdio/.dockerignore.tmpl": ".dockerignore",
+			"templates/go/stdio/Dockerfile.tmpl":    "Dockerfile",
+			"templates/go/stdio/dockerignore.tmpl": ".dockerignore",
 		}
 
 		for templatePath, outputPath := range dockerTemplates {
@@ -107,7 +107,7 @@ func (g *GoGenerator) generateFromTemplates(output string, data *core.TemplateDa
 // generateTemplate generates a single file from a template
 func (g *GoGenerator) generateTemplate(templatePath, outputPath string, data *core.TemplateData) error {
 	// Read template content
-	templateContent, err := os.ReadFile(templatePath)
+	templateContent, err := TemplatesFS.ReadFile(templatePath)
 	if err != nil {
 		return fmt.Errorf("failed to read template %s: %w", templatePath, err)
 	}
