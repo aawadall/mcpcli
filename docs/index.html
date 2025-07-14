@@ -7,10 +7,22 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!--#include file="header.html" -->
-    <!--#include file="hero.html" -->
-    <!--#include file="features.html" -->
-    <!--#include file="getting-started.html" -->
-    <!--#include file="footer.html" -->
+    <div id="header"></div>
+    <div id="hero"></div>
+    <div id="features"></div>
+    <div id="getting-started"></div>
+    <div id="footer"></div>
+    
+    <script>
+        async function loadContent() {
+            const sections = ['header', 'hero', 'features', 'getting-started', 'footer'];
+            for (const section of sections) {
+                const response = await fetch(`${section}.html`);
+                const content = await response.text();
+                document.getElementById(section).innerHTML = content;
+            }
+        }
+        loadContent();
+    </script>
 </body>
 </html>
