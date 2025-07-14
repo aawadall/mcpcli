@@ -20,7 +20,7 @@ func main() {
 
 	// Add subcommands
 	rootCmd.AddCommand(commands.NewGenerateCmd())
-
+	rootCmd.AddCommand(commands.NewTestCmd())
 	// TODO: Add future commands 
 
 	// Global flags 
