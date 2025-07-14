@@ -1,0 +1,59 @@
+# {{.ProjectName}} MCP Server
+
+This is a Model Context Protocol (MCP) server implemented in Go.
+
+## Getting Started
+
+To get started, clone the repository and run the following commands:
+
+```bash
+cd {{.Output}}
+go mod tidy
+go run cmd/server/main.go
+```
+
+## Available Commands
+
+- **List Resources**: Send a request to list all available resources
+- **Read Resource**: Send a request to read a specific resource by URI
+- **List Tools**: Send a request to list all available tools
+- **Call Tool**: Send a request to call a specific tool with arguments
+
+## Usage Examples
+
+### List Resources
+```json
+{"method": "resources/list", "id": 1}
+```
+
+### Read Resource
+```json
+{"method": "resources/read", "params": {"uri": "example/resource1"}, "id": 2}
+```
+
+### List Tools
+```json
+{"method": "tools/list", "id": 3}
+```
+
+### Call Tool
+```json
+{"method": "tools/call", "params": {"name": "example_tool", "arguments": {"message": "Hello World"}}, "id": 4}
+```
+
+## Docker Support
+
+To run the server in a Docker container, use the following commands:
+
+```bash
+docker build -t {{.ProjectName}}-mcp-server .
+docker run {{.ProjectName}}-mcp-server
+```
+
+## Examples
+
+You can find example usage in the `examples` directory.
+
+## License
+
+This project is licensed under the MIT License. 

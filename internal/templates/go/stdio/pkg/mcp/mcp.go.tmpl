@@ -1,0 +1,97 @@
+package mcp
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
+// Request represents an MCP request
+type Request struct {
+	Method string                 `json:"method"`
+	Params map[string]interface{} `json:"params,omitempty"`
+	ID     interface{}            `json:"id,omitempty"`
+}
+
+// Response represents an MCP response
+type Response struct {
+	Result interface{} `json:"result,omitempty"`
+	Error  *Error      `json:"error,omitempty"`
+	ID     interface{} `json:"id,omitempty"`
+}
+
+// Error represents an MCP error
+type Error struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+}
+
+// Server represents an MCP server
+type Server struct {
+	resourceHandler     func(Request) Response
+	resourceReadHandler func(Request) Response
+	toolHandler         func(Request) Response
+	callToolHandler     func(Request) Response
+}
+
+// NewServer creates a new MCP server
+func NewServer() *Server {
+	return &Server{}
+}
+
+// RegisterResourceHandler registers a resource list handler
+func (s *Server) RegisterResourceHandler(handler func(Request) Response) {
+	s.resourceHandler = handler
+}
+
+// RegisterResourceReadHandler registers a resource read handler
+func (s *Server) RegisterResourceReadHandler(handler func(Request) Response) {
+	s.resourceReadHandler = handler
+}
+
+// RegisterToolHandler registers a tool list handler
+func (s *Server) RegisterToolHandler(handler func(Request) Response) {
+	s.toolHandler = handler
+}
+
+// RegisterCallToolHandler registers a tool call handler
+func (s *Server) RegisterCallToolHandler(handler func(Request) Response) {
+	s.callToolHandler = handler
+}
+
+// HandleRequest handles an MCP request
+func (s *Server) HandleRequest(request Request) Response {
+	switch request.Method {
+	case "resources/list":
+		if s.resourceHandler != nil {
+			return s.resourceHandler(request)
+		}
+	case "resources/read":
+		if s.resourceReadHandler != nil {
+			return s.resourceReadHandler(request)
+		}
+	case "tools/list":
+		if s.toolHandler != nil {
+			return s.toolHandler(request)
+		}
+	case "tools/call":
+		if s.callToolHandler != nil {
+			return s.callToolHandler(request)
+		}
+	default:
+		return Response{
+			Error: &Error{
+				Code:    -32601,
+				Message: fmt.Sprintf("Method not found: %s", request.Method),
+			},
+			ID: request.ID,
+		}
+	}
+	
+	return Response{
+		Error: &Error{
+			Code:    -32600,
+			Message: "Invalid Request",
+		},
+		ID: request.ID,
+	}
+} 

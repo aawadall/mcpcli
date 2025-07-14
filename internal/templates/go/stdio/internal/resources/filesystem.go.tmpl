@@ -1,0 +1,120 @@
+package resources
+
+import (
+	"fmt"
+	"os"
+	"path/filepath"
+	"{{.ModuleName}}/pkg/mcp"
+)
+
+// FileSystemResource represents a filesystem resource
+type FileSystemResource struct {
+	Path string
+}
+
+// NewFileSystemResource creates a new filesystem resource
+func NewFileSystemResource(path string) *FileSystemResource {
+	return &FileSystemResource{Path: path}
+}
+
+// ListFiles lists files in a directory
+func (fs *FileSystemResource) ListFiles(req mcp.Request) mcp.Response {
+	path, ok := req.Params["path"].(string)
+	if !ok {
+		path = "."
+	}
+
+	files, err := os.ReadDir(path)
+	if err != nil {
+		return mcp.Response{
+			Error: &mcp.Error{
+				Code:    -32603,
+				Message: fmt.Sprintf("Failed to read directory: %v", err),
+			},
+			ID: req.ID,
+		}
+	}
+
+	var fileList []map[string]interface{}
+	for _, file := range files {
+		info, err := file.Info()
+		if err != nil {
+			continue
+		}
+
+		fileList = append(fileList, map[string]interface{}{
+			"name":    file.Name(),
+			"isDir":   file.IsDir(),
+			"size":    info.Size(),
+			"modTime": info.ModTime(),
+		})
+	}
+
+	return mcp.Response{
+		Result: map[string]interface{}{
+			"path":  path,
+			"files": fileList,
+		},
+		ID: req.ID,
+	}
+}
+
+// ReadFile reads the contents of a file
+func (fs *FileSystemResource) ReadFile(req mcp.Request) mcp.Response {
+	path, ok := req.Params["path"].(string)
+	if !ok {
+		return mcp.Response{
+			Error: &mcp.Error{
+				Code:    -32602,
+				Message: "Path parameter is required",
+			},
+			ID: req.ID,
+		}
+	}
+
+	// Check if file exists
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return mcp.Response{
+			Error: &mcp.Error{
+				Code:    -32603,
+				Message: fmt.Sprintf("File not found: %s", path),
+			},
+			ID: req.ID,
+		}
+	}
+
+	// Read file content
+	content, err := os.ReadFile(path)
+	if err != nil {
+		return mcp.Response{
+			Error: &mcp.Error{
+				Code:    -32603,
+				Message: fmt.Sprintf("Failed to read file: %v", err),
+			},
+			ID: req.ID,
+		}
+	}
+
+	// Get file info
+	info, err := os.Stat(path)
+	if err != nil {
+		return mcp.Response{
+			Error: &mcp.Error{
+				Code:    -32603,
+				Message: fmt.Sprintf("Failed to get file info: %v", err),
+			},
+			ID: req.ID,
+		}
+	}
+
+	return mcp.Response{
+		Result: map[string]interface{}{
+			"path":     path,
+			"content":  string(content),
+			"size":     info.Size(),
+			"modTime":  info.ModTime(),
+			"isDir":    info.IsDir(),
+		},
+		ID: req.ID,
+	}
+} 

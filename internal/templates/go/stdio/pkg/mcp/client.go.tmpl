@@ -1,0 +1,119 @@
+package mcp
+
+import (
+	"bufio"
+	"encoding/json"
+	"fmt"
+	"io"
+	"os"
+)
+
+// Client represents an MCP client
+type Client struct {
+	stdin  io.Reader
+	stdout io.Writer
+	stderr io.Writer
+}
+
+// NewClient creates a new MCP client
+func NewClient() *Client {
+	return &Client{
+		stdin:  os.Stdin,
+		stdout: os.Stdout,
+		stderr: os.Stderr,
+	}
+}
+
+// NewClientWithIO creates a new MCP client with custom IO
+func NewClientWithIO(stdin io.Reader, stdout io.Writer, stderr io.Writer) *Client {
+	return &Client{
+		stdin:  stdin,
+		stdout: stdout,
+		stderr: stderr,
+	}
+}
+
+// SendRequest sends a request to the MCP server
+func (c *Client) SendRequest(request Request) error {
+	requestJSON, err := json.Marshal(request)
+	if err != nil {
+		return fmt.Errorf("failed to marshal request: %w", err)
+	}
+
+	_, err = fmt.Fprintln(c.stdout, string(requestJSON))
+	if err != nil {
+		return fmt.Errorf("failed to send request: %w", err)
+	}
+
+	return nil
+}
+
+// ReadResponse reads a response from the MCP server
+func (c *Client) ReadResponse() (*Response, error) {
+	scanner := bufio.NewScanner(c.stdin)
+	if !scanner.Scan() {
+		if err := scanner.Err(); err != nil {
+			return nil, fmt.Errorf("failed to read response: %w", err)
+		}
+		return nil, fmt.Errorf("no response received")
+	}
+
+	var response Response
+	if err := json.Unmarshal([]byte(scanner.Text()), &response); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
+	}
+
+	return &response, nil
+}
+
+// Call sends a request and waits for a response
+func (c *Client) Call(method string, params map[string]interface{}, id interface{}) (*Response, error) {
+	request := Request{
+		Method: method,
+		Params: params,
+		ID:     id,
+	}
+
+	if err := c.SendRequest(request); err != nil {
+		return nil, err
+	}
+
+	return c.ReadResponse()
+}
+
+// ListResources calls the resources/list method
+func (c *Client) ListResources(id interface{}) (*Response, error) {
+	return c.Call("resources/list", nil, id)
+}
+
+// ReadResource calls the resources/read method
+func (c *Client) ReadResource(uri string, id interface{}) (*Response, error) {
+	params := map[string]interface{}{
+		"uri": uri,
+	}
+	return c.Call("resources/read", params, id)
+}
+
+// ListTools calls the tools/list method
+func (c *Client) ListTools(id interface{}) (*Response, error) {
+	return c.Call("tools/list", nil, id)
+}
+
+// CallTool calls the tools/call method
+func (c *Client) CallTool(name string, arguments map[string]interface{}, id interface{}) (*Response, error) {
+	params := map[string]interface{}{
+		"name":      name,
+		"arguments": arguments,
+	}
+	return c.Call("tools/call", params, id)
+}
+
+// PrintError prints an error to stderr
+func (c *Client) PrintError(format string, args ...interface{}) {
+	fmt.Fprintf(c.stderr, format+"\n", args...)
+}
+
+// PrintInfo prints info to stderr
+func (c *Client) PrintInfo(format string, args ...interface{}) {
+	fmt.Fprintf(c.stderr, format+"\n", args...)
+} 
