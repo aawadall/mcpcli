@@ -1,0 +1,93 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger on version tags like v1.0.0
+
+permissions:
+  contents: write  # Required for creating releases
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.21'  # Adjust to your Go version
+        
+    - name: Run tests
+      run: go test ./...
+      
+    - name: Build binaries
+      run: |
+        # Create dist directory
+        mkdir -p dist
+        
+        # Build for multiple platforms
+        GOOS=linux GOARCH=amd64 go build -o dist/mcpcli-linux-amd64 ./cmd/mcpcli
+        GOOS=linux GOARCH=arm64 go build -o dist/mcpcli-linux-arm64 ./cmd/mcpcli
+        GOOS=darwin GOARCH=amd64 go build -o dist/mcpcli-darwin-amd64 ./cmd/mcpcli
+        GOOS=darwin GOARCH=arm64 go build -o dist/mcpcli-darwin-arm64 ./cmd/mcpcli
+        GOOS=windows GOARCH=amd64 go build -o dist/mcpcli-windows-amd64.exe ./cmd/mcpcli
+        GOOS=windows GOARCH=arm64 go build -o dist/mcpcli-windows-arm64.exe ./cmd/mcpcli
+        
+        # Create archives
+        cd dist
+        tar -czf mcpcli-linux-amd64.tar.gz mcpcli-linux-amd64
+        tar -czf mcpcli-linux-arm64.tar.gz mcpcli-linux-arm64
+        tar -czf mcpcli-darwin-amd64.tar.gz mcpcli-darwin-amd64
+        tar -czf mcpcli-darwin-arm64.tar.gz mcpcli-darwin-arm64
+        zip mcpcli-windows-amd64.zip mcpcli-windows-amd64.exe
+        zip mcpcli-windows-arm64.zip mcpcli-windows-arm64.exe
+        
+    - name: Generate checksums
+      run: |
+        cd dist
+        sha256sum *.tar.gz *.zip > checksums.txt
+        
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          dist/*.tar.gz
+          dist/*.zip
+          dist/checksums.txt
+        body: |
+          ## Changes
+          
+          * Add release notes here
+          
+          ## Installation
+          
+          Download the appropriate binary for your platform from the assets below.
+          
+          ### Linux/macOS
+          ```bash
+          # Download and extract
+          tar -xzf mcpcli-linux-amd64.tar.gz
+          
+          # Make executable and move to PATH
+          chmod +x mcpcli-linux-amd64
+          sudo mv mcpcli-linux-amd64 /usr/local/bin/mcpcli
+          ```
+          
+          ### Windows
+          ```powershell
+          # Download and extract the zip file
+          # Add the executable to your PATH
+          ```
+          
+          ## Verify Installation
+          ```bash
+          mcpcli --version
+          ```
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
