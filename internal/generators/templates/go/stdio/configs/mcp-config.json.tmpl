@@ -6,7 +6,10 @@
   "author": "{{.Config.Author}}",
   "license": "MIT",
   "transport": {
-    "type": "stdio"
+    "type": "stdio",
+    "options": {
+      "command": "./{{.Config.Name}}"
+    }
   },
   "capabilities": {
     "resources": {
