@@ -51,6 +51,7 @@ func (g *GoGenerator) createDirectoryStructure(output string) error {
 		"internal/handlers",
 		"internal/resources",
 		"internal/tools",
+		"internal/capabilities",
 		"pkg/mcp",
 		"examples",
 		"configs",
@@ -181,6 +182,6 @@ func (g *GoGenerator) generateTemplate(templatePath, outputPath string, data int
 		return fmt.Errorf("failed to execute template %s: %w", templatePath, err)
 	}
 
-	color.Green("Created file: %s", outputPath)
+	color.Green("✅ Created file: %s", outputPath)
 	return nil
 }

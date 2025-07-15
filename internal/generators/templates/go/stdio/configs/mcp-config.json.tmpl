@@ -1,7 +1,12 @@
 {
   "name": "{{ .Config.Name }}",
   "language": "{{ .Config.Language }}",
-  "transport": "{{ .Config.Transport }}",
+  "transport": {
+    "type": "{{ .Config.Transport }}",
+    "options" : {
+        "command": "./{{ .Config.Name }}"
+      }
+    },
   "docker": {{ .Config.Docker }},
   "examples": {{ .Config.Examples }},
   "tools": [
@@ -22,13 +27,10 @@
     }
     {{- end }}
   ],
-  "capabilities": [
+  "capabilities": {
     {{- range $i, $cap := .Config.Capabilities }}
     {{- if $i }},{{ end }}
-    {
-      "name": "{{ $cap.Name }}",
-      "enabled": {{ $cap.Enabled }}
-    }
+      "{{ $cap.Name }}": {"enabled": {{ $cap.Enabled }} }
     {{- end }}
-  ]
+  }
 } 

@@ -234,8 +234,11 @@ func promptForOptions(opts *GenerateOptions) error {
 				Validate: survey.Required,
 			},
 			{
-				Name:   "Type",
-				Prompt: &survey.Input{Message: "Resource type:"},
+				Name: "Type",
+				Prompt: &survey.Select{
+					Message: "Resource type:",
+					Options: []string{string(core.ResourceTypeDatabase), string(core.ResourceTypeFilesystem), string(core.ResourceTypeTime)},
+				},
 			},
 		}, &resource)
 		opts.Resources = append(opts.Resources, resource)

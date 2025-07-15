@@ -29,7 +29,7 @@ func NewProjectConfig() *ProjectConfig {
 
 // GetTemplateData creates template data from the project config
 func (pc *ProjectConfig) GetTemplateData() *TemplateData {
-	mcpConfig := NewMCPConfig(pc.Name, pc.Version, pc.Description)
+	mcpConfig := NewMCPConfig(pc.Name, pc.Version, pc.Description, pc.Tools, pc.Resources)
 	mcpConfig.SetTransport(pc.Transport, getTransportOptions(pc.Transport))
 
 	return &TemplateData{
