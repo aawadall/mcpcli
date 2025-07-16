@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"{{.ModuleName}}/pkg/mcp"
+	"{{.ModuleName}}/internal/resources"
 )
 
 // Handler represents the MCP request handler
@@ -15,23 +16,17 @@ func NewHandler() *Handler {
 
 // HandleListResources handles the resources list request
 func (h *Handler) HandleListResources(req mcp.Request) mcp.Response {
-	// Example implementation - replace with your actual resources
-	resources := []map[string]interface{}{
-		{
-			"uri":  "example/resource1",
-			"name": "Example Resource 1",
-			"type": "text",
-		},
-		{
-			"uri":  "example/resource2", 
-			"name": "Example Resource 2",
-			"type": "json",
-		},
+	var resourcesList []map[string]interface{}
+	for _, r := range resources.RegisteredResources {
+		resourcesList = append(resourcesList, map[string]interface{}{
+			"uri":  r.URI,
+			"name": r.Name,
+			"type": r.Type,
+		})
 	}
-	
 	return mcp.Response{
 		Result: map[string]interface{}{
-			"resources": resources,
+			"resources": resourcesList,
 		},
 		ID: req.ID,
 	}

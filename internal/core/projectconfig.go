@@ -13,6 +13,10 @@ type ProjectConfig struct {
 	Description string    `json:"description,omitempty"`
 	Version     string    `json:"version"`
 	CreatedAt   time.Time `json:"created_at"`
+
+	Tools        []Tool       `json:"tools,omitempty"`
+	Resources    []Resource   `json:"resources,omitempty"`
+	Capabilities []Capability `json:"capabilities,omitempty"`
 }
 
 // NewProjectConfig creates a new project configuration with defaults
@@ -25,7 +29,7 @@ func NewProjectConfig() *ProjectConfig {
 
 // GetTemplateData creates template data from the project config
 func (pc *ProjectConfig) GetTemplateData() *TemplateData {
-	mcpConfig := NewMCPConfig(pc.Name, pc.Version, pc.Description)
+	mcpConfig := NewMCPConfig(pc.Name, pc.Version, pc.Description, pc.Tools, pc.Resources)
 	mcpConfig.SetTransport(pc.Transport, getTransportOptions(pc.Transport))
 
 	return &TemplateData{

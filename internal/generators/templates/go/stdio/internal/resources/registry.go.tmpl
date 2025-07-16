@@ -1,0 +1,20 @@
+package resources
+
+// ResourceInfo holds metadata about a resource
+//
+type ResourceInfo struct {
+	URI  string
+	Name string
+	Type string
+}
+
+// RegisteredResources is the list of all available resources
+var RegisteredResources = []ResourceInfo{
+{{- range $i, $res := .Config.Resources }}
+	{
+		URI:  "{{$res.Name}}",
+		Name: "{{$res.Name}}",
+		Type: "{{$res.Type}}",
+	},
+{{- end }}
+} 

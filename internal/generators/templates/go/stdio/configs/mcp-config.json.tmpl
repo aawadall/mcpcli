@@ -1,25 +1,36 @@
 {
-  "$schema": "https://schemas.modelcontextprotocol.org/server-config.json",
-  "name": "{{.Config.Name}}",
-  "version": "{{.Config.Version}}",
-  "description": "{{.Config.Description}}",
-  "author": "{{.Config.Author}}",
-  "license": "MIT",
+  "name": "{{ .Config.Name }}",
+  "language": "{{ .Config.Language }}",
   "transport": {
-    "type": "stdio",
-    "options": {
-      "command": "./{{.Config.Name}}"
+    "type": "{{ .Config.Transport }}",
+    "options" : {
+        "command": "./{{ .Config.Name }}"
+      }
+    },
+  "docker": {{ .Config.Docker }},
+  "examples": {{ .Config.Examples }},
+  "tools": [
+    {{- range $i, $tool := .Config.Tools }}
+    {{- if $i }},{{ end }}
+    {
+      "name": "{{ $tool.Name }}",
+      "description": "{{ $tool.Description }}"
     }
-  },
+    {{- end }}
+  ],
+  "resources": [
+    {{- range $i, $res := .Config.Resources }}
+    {{- if $i }},{{ end }}
+    {
+      "name": "{{ $res.Name }}",
+      "type": "{{ $res.Type }}"
+    }
+    {{- end }}
+  ],
   "capabilities": {
-    "resources": {
-      "enabled": true
-    },
-    "tools": {
-      "enabled": true
-    },
-    "prompts": {
-      "enabled": false
-    }
+    {{- range $i, $cap := .Config.Capabilities }}
+    {{- if $i }},{{ end }}
+      "{{ $cap.Name }}": {"enabled": {{ $cap.Enabled }} }
+    {{- end }}
   }
 } 

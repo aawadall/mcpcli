@@ -12,22 +12,26 @@ import (
 )
 
 type GenerateOptions struct {
-	Name        string
-	Language    string
-	Transport   string
-	Docker      bool
-	Examples    bool
-	Output      string
-	Interactive bool
+	Name         string
+	Language     string
+	Transport    string
+	Docker       bool
+	Examples     bool
+	Output       string
+	Interactive  bool
+	Force        bool
+	Tools        []core.Tool
+	Resources    []core.Resource
+	Capabilities []core.Capability
 }
 
 func NewGenerateCmd() *cobra.Command {
 	opts := &GenerateOptions{}
 
 	cmd := &cobra.Command{
-		Use:   "generate [name]",
+		Use:     "generate [name]",
 		Aliases: []string{"gen", "g"},
-		Short: "Generate a new MCP server project",
+		Short:   "Generate a new MCP server project",
 		Long: `Generate scaffolds a new MCP server project with the specified configuration.
 		Supports multiple languages, transport methods, and includes optional Docker support.`,
 		Args: cobra.MaximumNArgs(1),
@@ -63,7 +67,7 @@ func NewGenerateCmd() *cobra.Command {
 	cmd.Flags().BoolVarP(&opts.Docker, "docker", "d", false, "Include Docker support")
 	cmd.Flags().BoolVarP(&opts.Examples, "examples", "e", false, "Include example resources and tools")
 	cmd.Flags().StringVarP(&opts.Output, "output", "o", "", "Output directory (default to project name)")
-	cmd.Flags().BoolVarP(&opts.Interactive, "foorce", "f", false, "Overwrite existing directory")
+	cmd.Flags().BoolVarP(&opts.Force, "force", "f", false, "Overwrite existing directory")
 
 	return cmd
 }
@@ -188,6 +192,90 @@ func promptForOptions(opts *GenerateOptions) error {
 		}
 	}
 
+	var addTools bool
+	survey.AskOne(&survey.Confirm{
+		Message: "Would you like to add tools?",
+		Default: false,
+	}, &addTools)
+
+	for addTools {
+		var tool core.Tool
+		survey.Ask([]*survey.Question{
+			{
+				Name:     "Name",
+				Prompt:   &survey.Input{Message: "Tool name:"},
+				Validate: survey.Required,
+			},
+			{
+				Name:   "Description",
+				Prompt: &survey.Input{Message: "Tool description:"},
+			},
+		}, &tool)
+		opts.Tools = append(opts.Tools, tool)
+
+		survey.AskOne(&survey.Confirm{
+			Message: "Add another tool?",
+			Default: false,
+		}, &addTools)
+	}
+
+	var addResources bool
+	survey.AskOne(&survey.Confirm{
+		Message: "Would you like to add resources?",
+		Default: false,
+	}, &addResources)
+
+	for addResources {
+		var resource core.Resource
+		survey.Ask([]*survey.Question{
+			{
+				Name:     "Name",
+				Prompt:   &survey.Input{Message: "Resource name:"},
+				Validate: survey.Required,
+			},
+			{
+				Name: "Type",
+				Prompt: &survey.Select{
+					Message: "Resource type:",
+					Options: []string{string(core.ResourceTypeDatabase), string(core.ResourceTypeFilesystem), string(core.ResourceTypeTime)},
+				},
+			},
+		}, &resource)
+		opts.Resources = append(opts.Resources, resource)
+
+		survey.AskOne(&survey.Confirm{
+			Message: "Add another resource?",
+			Default: false,
+		}, &addResources)
+	}
+
+	var addCapabilities bool
+	survey.AskOne(&survey.Confirm{
+		Message: "Would you like to add capabilities?",
+		Default: false,
+	}, &addCapabilities)
+
+	for addCapabilities {
+		var capability core.Capability
+		survey.Ask([]*survey.Question{
+			{
+				Name:     "Name",
+				Prompt:   &survey.Input{Message: "Capability name:"},
+				Validate: survey.Required,
+			},
+			{
+				Name:   "Enabled",
+				Prompt: &survey.Confirm{Message: "Enable this capability?"},
+			},
+		}, &capability)
+		opts.Capabilities = append(opts.Capabilities, capability)
+
+		survey.AskOne(&survey.Confirm{
+			Message: "Add another capability?",
+			Default: false,
+		}, &addCapabilities)
+	}
+
 	return nil
 }
 
@@ -230,13 +318,16 @@ func contains(slice []string, item string) bool {
 // generateProject creates the project structure based on the provided options.
 func generateProject(opts *GenerateOptions) error {
 	// Create project configuration
-	config :=&core.ProjectConfig{
-		Name:      opts.Name,
-		Language:  opts.Language,
-		Transport: opts.Transport,
-		Docker:    opts.Docker,
-		Examples:  opts.Examples,
-		Output:    opts.Output,
+	config := &core.ProjectConfig{
+		Name:         opts.Name,
+		Language:     opts.Language,
+		Transport:    opts.Transport,
+		Docker:       opts.Docker,
+		Examples:     opts.Examples,
+		Output:       opts.Output,
+		Tools:        opts.Tools,
+		Resources:    opts.Resources,
+		Capabilities: opts.Capabilities,
 	}
 
 	// Check if the directory exists
@@ -272,11 +363,11 @@ func generateProject(opts *GenerateOptions) error {
 	fmt.Printf("📁 Location: %s\n", path)
 	fmt.Printf("🚀 Next steps:\n")
 	fmt.Printf("   cd %s\n", opts.Output)
-	
+
 	if opts.Language == "go" {
 		fmt.Printf("   go mod tidy\n")
 		fmt.Printf("   go run cmd/%s/main.go\n", opts.Transport)
 	}
 
 	return nil
-}	
+}
