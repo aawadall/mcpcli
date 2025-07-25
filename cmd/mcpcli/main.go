@@ -21,9 +21,9 @@ func main() {
 	// Add subcommands
 	rootCmd.AddCommand(commands.NewGenerateCmd())
 	rootCmd.AddCommand(commands.NewTestCmd())
-	// TODO: Add future commands 
+	// TODO: Add future commands
 
-	// Global flags 
+	// Global flags
 	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "Enable verbose output")
 	rootCmd.PersistentFlags().BoolP("quiet", "q", false, "Suppress output")
 

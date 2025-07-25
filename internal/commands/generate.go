@@ -298,7 +298,7 @@ func validateOptions(opts *GenerateOptions) error {
 		return fmt.Errorf("invalid transport: %s, valid options are: %v", opts.Transport, validTransports)
 	}
 
-	// Set default outpyt directory if not provided
+	// Set default output directory if not provided
 	if opts.Output == "" {
 		opts.Output = opts.Name
 	}
@@ -330,9 +330,17 @@ func generateProject(opts *GenerateOptions) error {
 		Capabilities: opts.Capabilities,
 	}
 
-	// Check if the directory exists
-	if _, err := os.Stat(opts.Output); !os.IsNotExist(err) {
-		return fmt.Errorf("output directory %s already exists, use --force to overwrite", opts.Output)
+	// Check if the directory exists and handle the --force flag
+	if _, err := os.Stat(opts.Output); err == nil {
+		if opts.Force {
+			if err := os.RemoveAll(opts.Output); err != nil {
+				return fmt.Errorf("failed to remove existing directory: %w", err)
+			}
+		} else {
+			return fmt.Errorf("output directory %s already exists, use --force to overwrite", opts.Output)
+		}
+	} else if !os.IsNotExist(err) {
+		return fmt.Errorf("failed to check output directory: %w", err)
 	}
 
 	// Create output directory
@@ -364,7 +372,7 @@ func generateProject(opts *GenerateOptions) error {
 	fmt.Printf("🚀 Next steps:\n")
 	fmt.Printf("   cd %s\n", opts.Output)
 
-	if opts.Language == "go" {
+	if opts.Language == "go" || opts.Language == "golang" {
 		fmt.Printf("   go mod tidy\n")
 		fmt.Printf("   go run cmd/%s/main.go\n", opts.Transport)
 	}

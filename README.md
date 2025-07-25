@@ -49,7 +49,7 @@ Or use interactive mode (if required options are missing):
 - `--docker, -d`       Include Docker support
 - `--examples, -e`     Include example resources and tools
 - `--output, -o`       Output directory (default: project name)
-- `--foorce, -f`       Overwrite existing directory (**note: flag is currently `--foorce` due to a typo**)
+- `--force, -f`        Overwrite existing directory
 
 ### Test an MCP server
 
