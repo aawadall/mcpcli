@@ -16,6 +16,6 @@ rl.on('line', line => {
     const res = handleRequest(req);
     console.log(JSON.stringify(res));
   } catch (err) {
-    console.error('Error:', err.message);
+    console.error('Error processing input line:', line, 'Error message:', err.message);
   }
 });
