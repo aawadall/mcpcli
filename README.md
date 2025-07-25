@@ -6,7 +6,7 @@ A CLI tool to scaffold Model Context Protocol (MCP) server projects in Go and ot
 
 ## Features
 - Generate new MCP server projects with a single command
-- Supports multiple languages (currently: Go, Python, Java, JavaScript)
+- Supports multiple languages (Go, Node.js); Python and Java support planned
 - Choose transport method (stdio, rest, websocket)
 - Optional Docker support
 - Example resources and tools included
@@ -44,7 +44,7 @@ Or use interactive mode (if required options are missing):
 
 #### Generate Flags
 - `--name, -n`         Project name
-- `--language, -l`     Programming language (`golang`, `python`, `java`, `javascript`)
+- `--language, -l`     Programming language (`golang`, `python`, `java`, `javascript`/Node.js)
 - `--transport, -t`    Transport method (`stdio`, `rest`, `websocket`)
 - `--docker, -d`       Include Docker support
 - `--examples, -e`     Include example resources and tools
