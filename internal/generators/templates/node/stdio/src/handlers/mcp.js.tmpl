@@ -33,5 +33,17 @@ export function handleListTools(req) {
 }
 
 export function handleCallTool(req) {
+  const toolName = req.params?.toolName;
+  const args = req.params?.arguments;
+
+  if (!toolName || typeof toolName !== 'string') {
+    return { error: { code: -32602, message: 'Invalid params: toolName is required and must be a string' }, id: req.id };
+  }
+
+  if (args === undefined || (typeof args !== 'object' && !Array.isArray(args))) {
+    return { error: { code: -32602, message: 'Invalid params: arguments must be an object or an array' }, id: req.id };
+  }
+
+  // TODO: Implement logic to call the specified tool with the provided arguments.
   return { error: { code: -32601, message: 'No tools defined' }, id: req.id };
 }
