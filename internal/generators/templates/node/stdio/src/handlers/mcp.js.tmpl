@@ -24,8 +24,8 @@ export function handleReadResource(req) {
   if (!uri) {
     return { error: { code: -32602, message: 'Invalid params: uri is required' }, id: req.id };
   }
-  const resource = { uri, name: `Resource: ${uri}`, type: 'text', data: `This is the content of resource: ${uri}` };
-  return { result: resource, id: req.id };
+  // TODO: Implement logic to read the resource based on the provided URI.
+  return { error: { code: -32601, message: 'Read resource functionality not implemented' }, id: req.id };
 }
 
 export function handleListTools(req) {
