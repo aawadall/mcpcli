@@ -75,6 +75,7 @@ func (g *GoGenerator) generateFromTemplates(output string, data *core.TemplateDa
 		"templates/go/stdio/cmd/server/main.go.tmpl":               "cmd/server/main.go",
 		"templates/go/stdio/internal/handlers/mcp.go.tmpl":         "internal/handlers/mcp.go",
 		"templates/go/stdio/internal/resources/filesystem.go.tmpl": "internal/resources/filesystem.go",
+		"templates/go/stdio/internal/resources/registry.go.tmpl":   "internal/resources/registry.go",
 		"templates/go/stdio/internal/tools/calculator.go.tmpl":     "internal/tools/calculator.go",
 		"templates/go/stdio/pkg/mcp/client.go.tmpl":                "pkg/mcp/client.go",
 		"templates/go/stdio/pkg/mcp/mcp.go.tmpl":                   "pkg/mcp/mcp.go",
