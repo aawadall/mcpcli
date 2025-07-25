@@ -1,0 +1,5 @@
+import { handleRequest } from '../src/handlers/mcp.js';
+
+console.log('Example: list resources');
+let res = handleRequest({ method: 'resources/list', id: 1 });
+console.log(JSON.stringify(res, null, 2));

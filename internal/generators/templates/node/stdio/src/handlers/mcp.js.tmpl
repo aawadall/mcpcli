@@ -1,0 +1,37 @@
+import { registeredResources } from '../resources/registry.js';
+
+export function handleRequest(req) {
+  switch (req.method) {
+    case 'resources/list':
+      return handleListResources(req);
+    case 'resources/read':
+      return handleReadResource(req);
+    case 'tools/list':
+      return handleListTools(req);
+    case 'tools/call':
+      return handleCallTool(req);
+    default:
+      return { error: { code: -32601, message: `Method not found: ${req.method}` }, id: req.id };
+  }
+}
+
+export function handleListResources(req) {
+  return { result: { resources: registeredResources }, id: req.id };
+}
+
+export function handleReadResource(req) {
+  const uri = req.params?.uri;
+  if (!uri) {
+    return { error: { code: -32602, message: 'Invalid params: uri is required' }, id: req.id };
+  }
+  const resource = { uri, name: `Resource: ${uri}`, type: 'text', data: `This is the content of resource: ${uri}` };
+  return { result: resource, id: req.id };
+}
+
+export function handleListTools(req) {
+  return { result: { tools: [] }, id: req.id };
+}
+
+export function handleCallTool(req) {
+  return { error: { code: -32601, message: 'No tools defined' }, id: req.id };
+}
