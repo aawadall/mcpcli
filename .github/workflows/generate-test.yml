@@ -1,0 +1,35 @@
+name: Generate Task Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+
+      - name: Build CLI
+        run: go build -o mcpcli ./cmd/mcpcli
+
+      - name: Run generate command
+        run: |
+          ./mcpcli generate sample-project \
+            --language golang \
+            --transport stdio \
+            --output ./generated \
+            --force
+
+      - name: Build generated project
+        run: |
+          cd generated
+          go mod tidy
+          go build ./...
