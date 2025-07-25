@@ -3,15 +3,15 @@ package resources
 import "{{.ModuleName}}/pkg/mcp"
 
 // {{.Resource.Name}} resource
-type {{.Resource.Name }}Resource struct{}
+type {{.Resource.Name}}Resource struct{}
 
 // New{{.Resource.Name }}Resource creates a new {{.Resource.Name}} resource
-func New{{.Resource.Name }}Resource() *{{.Resource.Name }}Resource {
-	return &{{.Resource.Name }}Resource{}
+func New{{.Resource.Name}}Resource() *{{.Resource.Name}}Resource {
+        return &{{.Resource.Name}}Resource{}
 }
 
 // Read executes the resource logic
-func (r *{{.Resource.Name }}Resource) Read(req mcp.Request) mcp.Response {
+func (r *{{.Resource.Name}}Resource) Read(req mcp.Request) mcp.Response {
 	// TODO: Implement resource logic for {{.Resource.Name}}
 	return mcp.Response{
 		Result: map[string]interface{}{

@@ -3,15 +3,15 @@ package capabilities
 import "{{.ModuleName}}/pkg/mcp"
 
 // {{.Capability.Name}} capability
-type {{.Capability.Name }}Capability struct{}
+type {{.Capability.Name}}Capability struct{}
 
 // New{{.Capability.Name }}Capability creates a new {{.Capability.Name}} capability
-func New{{.Capability.Name }}Capability() *{{.Capability.Name }}Capability {
-	return &{{.Capability.Name }}Capability{}
+func New{{.Capability.Name}}Capability() *{{.Capability.Name}}Capability {
+        return &{{.Capability.Name}}Capability{}
 }
 
 // Enable executes the capability logic
-func (c *{{.Capability.Name }}Capability) Enable(req mcp.Request) mcp.Response {
+func (c *{{.Capability.Name}}Capability) Enable(req mcp.Request) mcp.Response {
 	// TODO: Implement capability logic for {{.Capability.Name}}
 	return mcp.Response{
 		Result: map[string]interface{}{
