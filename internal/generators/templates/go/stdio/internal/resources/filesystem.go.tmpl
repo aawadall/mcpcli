@@ -3,7 +3,6 @@ package resources
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 	"{{.ModuleName}}/pkg/mcp"
 )
 
@@ -109,12 +108,12 @@ func (fs *FileSystemResource) ReadFile(req mcp.Request) mcp.Response {
 
 	return mcp.Response{
 		Result: map[string]interface{}{
-			"path":     path,
-			"content":  string(content),
-			"size":     info.Size(),
-			"modTime":  info.ModTime(),
-			"isDir":    info.IsDir(),
+			"path":    path,
+			"content": string(content),
+			"size":    info.Size(),
+			"modTime": info.ModTime(),
+			"isDir":   info.IsDir(),
 		},
 		ID: req.ID,
 	}
-} 
+}
