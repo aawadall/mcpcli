@@ -1,0 +1,21 @@
+import readline from 'readline';
+import { handleRequest } from './handlers/mcp.js';
+
+console.error('Starting {{.Config.Name}} MCP Server (stdio mode)...');
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+  terminal: false
+});
+
+rl.on('line', line => {
+  if (!line) return;
+  try {
+    const req = JSON.parse(line);
+    const res = handleRequest(req);
+    console.log(JSON.stringify(res));
+  } catch (err) {
+    console.error('Error processing input line. Error message:', err.message);
+  }
+});

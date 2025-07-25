@@ -91,6 +91,12 @@ A generated Go MCP server project includes:
 - `Dockerfile`         - Docker support (optional)
 - `examples/`          - Example usage (optional)
 
+A generated Node.js MCP server project includes:
+- `src/index.js` - Main server entrypoint
+- `src/handlers/` - Request handlers
+- `configs/mcp-config.json` - Server configuration
+- `Dockerfile` - Docker support (optional)
+
 ## Contributing
 
 Contributions are welcome! Please open issues or pull requests.

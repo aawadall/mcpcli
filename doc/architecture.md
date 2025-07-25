@@ -30,6 +30,14 @@
 - `Dockerfile` — Docker support (optional)
 - `examples/` — Example usage (optional)
 
+## Generated Project Structure (Node.js Example)
+
+- `src/index.js` — Main server entrypoint
+- `src/handlers/` — Request handlers
+- `configs/mcp-config.json` — Server configuration
+- `Dockerfile` — Docker support (optional)
+- `examples/` — Example usage (optional)
+
 ## Extensibility
 
 - **Languages**: Add new generators in `internal/generators/` and templates in `internal/templates/`

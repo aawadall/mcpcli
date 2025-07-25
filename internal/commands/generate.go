@@ -287,7 +287,7 @@ func validateOptions(opts *GenerateOptions) error {
 	}
 
 	// validate language
-	validLanguages := []string{"golang"} // Add other valid languages as needed
+	validLanguages := []string{"golang", "javascript"}
 	if !contains(validLanguages, opts.Language) {
 		return fmt.Errorf("invalid language: %s, valid options are: %v", opts.Language, validLanguages)
 	}
@@ -354,6 +354,8 @@ func generateProject(opts *GenerateOptions) error {
 	switch opts.Language {
 	case "golang":
 		generator = generators.NewGolangGenerator()
+	case "javascript":
+		generator = generators.NewNodeGenerator()
 	default:
 		return fmt.Errorf("language %s is not supported yet", opts.Language)
 	}

@@ -1,0 +1,18 @@
+# {{.Config.Name}} MCP Server (Node.js)
+
+This is a Model Context Protocol (MCP) server implemented in Node.js.
+
+## Getting Started
+
+```bash
+cd {{.Config.Output}}
+node src/index.js
+```
+
+## Docker
+If Docker support was enabled during generation:
+
+```bash
+docker build -t {{.Config.Name}}-server .
+docker run {{.Config.Name}}-server
+```

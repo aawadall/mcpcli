@@ -1,0 +1,49 @@
+import { registeredResources } from '../resources/registry.js';
+
+export function handleRequest(req) {
+  switch (req.method) {
+    case 'resources/list':
+      return handleListResources(req);
+    case 'resources/read':
+      return handleReadResource(req);
+    case 'tools/list':
+      return handleListTools(req);
+    case 'tools/call':
+      return handleCallTool(req);
+    default:
+      return { error: { code: -32601, message: `Method not found: ${req.method}` }, id: req.id };
+  }
+}
+
+export function handleListResources(req) {
+  return { result: { resources: registeredResources }, id: req.id };
+}
+
+export function handleReadResource(req) {
+  const uri = req.params?.uri;
+  if (!uri) {
+    return { error: { code: -32602, message: 'Invalid params: uri is required' }, id: req.id };
+  }
+  // TODO: Implement logic to read the resource based on the provided URI.
+  return { error: { code: -32601, message: 'Read resource functionality not implemented' }, id: req.id };
+}
+
+export function handleListTools(req) {
+  return { result: { tools: [] }, id: req.id };
+}
+
+export function handleCallTool(req) {
+  const toolName = req.params?.toolName;
+  const args = req.params?.arguments;
+
+  if (!toolName || typeof toolName !== 'string') {
+    return { error: { code: -32602, message: 'Invalid params: toolName is required and must be a string' }, id: req.id };
+  }
+
+  if (args === undefined || (typeof args !== 'object' && !Array.isArray(args))) {
+    return { error: { code: -32602, message: 'Invalid params: arguments must be an object or an array' }, id: req.id };
+  }
+
+  // TODO: Implement logic to call the specified tool with the provided arguments.
+  return { error: { code: -32601, message: 'No tools defined' }, id: req.id };
+}
