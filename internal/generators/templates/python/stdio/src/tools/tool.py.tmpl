@@ -1,0 +1,6 @@
+def {{.Tool.Name}}(req):
+    # TODO: implement tool logic for {{.Tool.Name}}
+    return {
+        'result': {'message': f'Tool {{.Tool.Name}} executed'},
+        'id': req.get('id')
+    }

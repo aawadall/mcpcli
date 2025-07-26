@@ -1,0 +1,16 @@
+import sys
+import json
+from handlers.mcp import handle_request
+
+print(f"Starting {{ .Config.Name }} MCP Server (stdio mode)...", file=sys.stderr)
+
+for line in sys.stdin:
+    line = line.strip()
+    if not line:
+        continue
+    try:
+        req = json.loads(line)
+        res = handle_request(req)
+        print(json.dumps(res))
+    except Exception as e:
+        print(f"Error processing request: {e}", file=sys.stderr)

@@ -1,0 +1,5 @@
+from handlers.mcp import handle_request
+
+print('Example: list resources')
+res = handle_request({'method': 'resources/list', 'id': 1})
+print(res)
