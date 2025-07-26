@@ -1,0 +1,6 @@
+def {{.Capability.Name}}(req):
+    # TODO: implement capability logic for {{.Capability.Name}}
+    return {
+        'result': {'message': f'Capability {{.Capability.Name}} enabled'},
+        'id': req.get('id')
+    }

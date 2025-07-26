@@ -1,0 +1,6 @@
+def {{.Resource.Name}}(req):
+    # TODO: implement resource logic for {{.Resource.Name}}
+    return {
+        'result': {'message': f'Resource {{.Resource.Name}} read'},
+        'id': req.get('id')
+    }

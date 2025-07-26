@@ -1,0 +1,10 @@
+{
+  "name": "{{ .Config.Name }}",
+  "language": "{{ .Config.Language }}",
+  "transport": {
+    "type": "{{ .Config.Transport }}",
+    "options": { "command": "python src/main.py" }
+  },
+  "docker": {{ .Config.Docker }},
+  "examples": {{ .Config.Examples }}
+}

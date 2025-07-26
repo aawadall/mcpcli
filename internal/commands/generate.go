@@ -287,7 +287,7 @@ func validateOptions(opts *GenerateOptions) error {
 	}
 
 	// validate language
-	validLanguages := []string{"golang", "javascript", "java"}
+	validLanguages := []string{"golang", "javascript", "java", "python"}
 	if !contains(validLanguages, opts.Language) {
 		return fmt.Errorf("invalid language: %s, valid options are: %v", opts.Language, validLanguages)
 	}
@@ -358,6 +358,8 @@ func generateProject(opts *GenerateOptions) error {
 		generator = generators.NewNodeGenerator()
 	case "java":
 		generator = generators.NewJavaGenerator()
+	case "python":
+		generator = generators.NewPythonGenerator()
 	default:
 		return fmt.Errorf("language %s is not supported yet", opts.Language)
 	}
@@ -385,6 +387,8 @@ func generateProject(opts *GenerateOptions) error {
 	} else if opts.Language == "java" {
 		fmt.Printf("   mvn package\n")
 		fmt.Printf("   java -jar target/%s-1.0.0.jar\n", opts.Name)
+	} else if opts.Language == "python" {
+		fmt.Printf("   python src/main.py\n")
 	}
 
 	return nil
