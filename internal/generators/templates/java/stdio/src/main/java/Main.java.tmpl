@@ -1,0 +1,24 @@
+package {{.PackageName}};
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import handlers.MCPHandler;
+import org.json.JSONObject;
+
+public class Main {
+    public static void main(String[] args) throws Exception {
+        System.err.println("Starting {{.Config.Name}} MCP Server (stdio mode)...");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            if (line.isEmpty()) continue;
+            try {
+                JSONObject req = new JSONObject(line);
+                JSONObject res = MCPHandler.handleRequest(req);
+                System.out.println(res.toString());
+            } catch (Exception e) {
+                System.err.println("Error processing input line: " + e.getMessage());
+            }
+        }
+    }
+}

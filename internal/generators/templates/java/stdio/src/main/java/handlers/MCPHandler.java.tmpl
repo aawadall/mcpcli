@@ -1,0 +1,54 @@
+package {{.PackageName}}.handlers;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import {{.PackageName}}.resources.Registry;
+
+public class MCPHandler {
+    public static JSONObject handleRequest(JSONObject req) {
+        String method = req.optString("method");
+        switch (method) {
+            case "resources/list":
+                return handleListResources(req);
+            case "resources/read":
+                return handleReadResource(req);
+            case "tools/list":
+                return handleListTools(req);
+            case "tools/call":
+                return handleCallTool(req);
+            default:
+                JSONObject err = new JSONObject();
+                err.put("error", new JSONObject().put("code", -32601).put("message", "Method not found: " + method));
+                err.put("id", req.optInt("id"));
+                return err;
+        }
+    }
+
+    private static JSONObject handleListResources(JSONObject req) {
+        JSONObject res = new JSONObject();
+        res.put("result", new JSONObject().put("resources", Registry.registeredResources()));
+        res.put("id", req.optInt("id"));
+        return res;
+    }
+
+    private static JSONObject handleReadResource(JSONObject req) {
+        JSONObject err = new JSONObject();
+        err.put("error", new JSONObject().put("code", -32601).put("message", "Read resource functionality not implemented"));
+        err.put("id", req.optInt("id"));
+        return err;
+    }
+
+    private static JSONObject handleListTools(JSONObject req) {
+        JSONObject res = new JSONObject();
+        res.put("result", new JSONObject().put("tools", new JSONArray()));
+        res.put("id", req.optInt("id"));
+        return res;
+    }
+
+    private static JSONObject handleCallTool(JSONObject req) {
+        JSONObject err = new JSONObject();
+        err.put("error", new JSONObject().put("code", -32601).put("message", "No tools defined"));
+        err.put("id", req.optInt("id"));
+        return err;
+    }
+}

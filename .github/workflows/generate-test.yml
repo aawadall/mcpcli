@@ -33,3 +33,22 @@ jobs:
           cd generated
           go mod tidy
           go build ./...
+
+      - name: Generate Java project
+        run: |
+          ./mcpcli generate sample-java \
+            --language java \
+            --transport stdio \
+            --output ./generated-java \
+            --force
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Build generated Java project
+        run: |
+          cd generated-java
+          mvn -B package
