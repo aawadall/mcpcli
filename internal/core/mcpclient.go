@@ -80,8 +80,8 @@ func sanitizeURI(uri string) (string, error) {
 	if trimmed == "" {
 		return "", fmt.Errorf("uri is empty")
 	}
-	if _, err := url.ParseRequestURI(trimmed); err != nil {
-		return "", fmt.Errorf("invalid uri: %w", err)
+	if _, err := url.Parse(trimmed); err != nil {
+		return "", fmt.Errorf("invalid or malformed uri: %w", err)
 	}
 	return trimmed, nil
 }
