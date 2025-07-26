@@ -1,0 +1,14 @@
+package {{.PackageName}}.resources;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+public class Registry {
+    public static JSONArray registeredResources() {
+        JSONArray resources = new JSONArray();
+        {{- range $i, $res := .Config.Resources }}
+        resources.put(new JSONObject().put("uri", "{{ $res.Name }}").put("name", "{{ $res.Name }}").put("type", "{{ $res.Type }}"));
+        {{- end }}
+        return resources;
+    }
+}

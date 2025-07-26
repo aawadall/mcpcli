@@ -1,0 +1,19 @@
+# {{.Config.Name}} MCP Server (Java)
+
+This is a Model Context Protocol (MCP) server implemented in Java.
+
+## Getting Started
+
+```bash
+cd {{.Config.Output}}
+mvn package
+java -jar target/{{.Config.Name}}-1.0.0.jar
+```
+
+## Docker
+If Docker support was enabled during generation:
+
+```bash
+docker build -t {{.Config.Name}}-server .
+docker run {{.Config.Name}}-server
+```
