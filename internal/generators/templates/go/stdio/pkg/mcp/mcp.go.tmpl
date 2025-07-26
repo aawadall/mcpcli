@@ -85,7 +85,7 @@ func (s *Server) HandleRequest(request Request) Response {
 			ID: request.ID,
 		}
 	}
-	
+
 	return Response{
 		Error: &Error{
 			Code:    -32600,
@@ -93,4 +93,4 @@ func (s *Server) HandleRequest(request Request) Response {
 		},
 		ID: request.ID,
 	}
-} 
+}
