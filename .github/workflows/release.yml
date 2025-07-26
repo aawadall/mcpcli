@@ -50,6 +50,12 @@ jobs:
       run: |
         cd dist
         sha256sum *.tar.gz *.zip > checksums.txt
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: dist
+        path: dist/
         
     - name: Create Release
       uses: softprops/action-gh-release@v1
@@ -91,3 +97,22 @@ jobs:
         prerelease: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [homebrew, apt, chocolatey]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - name: Publish to ${{ matrix.target }}
+        run: echo "Publishing to ${{ matrix.target }}"
