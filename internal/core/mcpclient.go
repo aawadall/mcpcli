@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"net/url"
 	"os"
+	"strings"
 )
 
 type MCPClient struct {
@@ -73,8 +75,23 @@ func (c *MCPClient) ListResources(id interface{}) (*Response, error) {
 	return c.Call("resources/list", nil, id)
 }
 
+func sanitizeURI(uri string) (string, error) {
+	trimmed := strings.TrimSpace(uri)
+	if trimmed == "" {
+		return "", fmt.Errorf("uri is empty")
+	}
+	if _, err := url.ParseRequestURI(trimmed); err != nil {
+		return "", fmt.Errorf("invalid uri: %w", err)
+	}
+	return trimmed, nil
+}
+
 func (c *MCPClient) ReadResource(uri string, id interface{}) (*Response, error) {
-	params := map[string]interface{}{"uri": uri}
+	sanitized, err := sanitizeURI(uri)
+	if err != nil {
+		return nil, err
+	}
+	params := map[string]interface{}{"uri": sanitized}
 	return c.Call("resources/read", params, id)
 }
 
