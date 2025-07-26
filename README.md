@@ -103,6 +103,12 @@ A generated Node.js MCP server project includes:
 
 Contributions are welcome! Please open issues or pull requests.
 
+## Releasing
+
+The [release workflow](.github/workflows/release.yml) builds cross-platform archives.
+For details on packaging `mcpcli` for Homebrew, APT, and Chocolatey see
+[the releasing guide](doc/releasing.md).
+
 ## License
 
 MIT License
