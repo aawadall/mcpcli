@@ -377,6 +377,9 @@ func generateProject(opts *GenerateOptions) error {
 	if opts.Language == "go" || opts.Language == "golang" {
 		fmt.Printf("   go mod tidy\n")
 		fmt.Printf("   go run cmd/%s/main.go\n", opts.Transport)
+	} else if opts.Language == "javascript" {
+		fmt.Printf("   npm install\n")
+		fmt.Printf("   node src/index.js\n")
 	}
 
 	return nil
