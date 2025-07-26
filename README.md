@@ -2,6 +2,8 @@
 
 A CLI tool to scaffold Model Context Protocol (MCP) server projects in Go and other languages. It generates ready-to-use MCP server templates with support for multiple transports, Docker, and example resources/tools.
 
+**Current Version:** v0.4.0
+
 > Learn more about the Model Context Protocol at the [official introduction page](https://modelcontextprotocol.io/introduction).
 
 ## Features

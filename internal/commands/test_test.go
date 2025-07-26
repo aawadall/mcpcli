@@ -12,7 +12,7 @@ import (
 func writeTempConfig(t *testing.T, dir string) string {
 	cfg := &core.MCPConfig{
 		Name:      "test",
-		Version:   "0.1.0",
+		Version:   "0.4.0",
 		Transport: core.Transport{Type: "stdio"},
 	}
 	data, err := json.Marshal(cfg)
