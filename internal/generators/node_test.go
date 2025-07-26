@@ -46,8 +46,13 @@ func TestNodeGenerator_GenerateBasic(t *testing.T) {
 	}
 
 	for _, f := range expected {
-		if info, err := os.Stat(f); err != nil || info.IsDir() {
-			t.Errorf("expected file %s to exist", f)
+		info, err := os.Stat(f)
+		if err != nil {
+			t.Errorf("expected file %s to exist, but got error: %v", f, err)
+			continue
+		}
+		if info.IsDir() {
+			t.Errorf("expected file %s to be a file, but it is a directory", f)
 		}
 	}
 }
