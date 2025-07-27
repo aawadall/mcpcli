@@ -7,6 +7,7 @@ import (
 	"text/template"
 
 	"github.com/aawadall/mcpcli/internal/core"
+	tmp "github.com/aawadall/mcpcli/internal/generators/templates"
 	"github.com/fatih/color"
 )
 
@@ -54,46 +55,34 @@ func (g *PythonGenerator) createDirectoryStructure(output string) error {
 
 // generateFromTemplates renders all static and dynamic templates for the project.
 func (g *PythonGenerator) generateFromTemplates(output string, data *core.TemplateData) error {
-	templates := map[string]string{
-		"templates/python/stdio/src/main.py.tmpl":               "src/main.py",
-		"templates/python/stdio/src/handlers/mcp.py.tmpl":       "src/handlers/mcp.py",
-		"templates/python/stdio/src/resources/registry.py.tmpl": "src/resources/registry.py",
-		"templates/python/stdio/README.md.tmpl":                 "README.md",
-		"templates/python/stdio/configs/mcp-config.json.tmpl":   "configs/mcp-config.json",
-		"templates/python/stdio/examples/example.py.tmpl":       "examples/example.py",
+	templates, err := tmp.BaseTemplateMap(g.GetLanguage(), data)
+	if err != nil {
+		return err
 	}
 	if err := g.generateTemplateMap(output, templates, data); err != nil {
 		return err
 	}
 
-	if data.Config.Docker {
-		dockerTemps := map[string]string{
-			"templates/python/stdio/Dockerfile.tmpl":   "Dockerfile",
-			"templates/python/stdio/dockerignore.tmpl": ".dockerignore",
-		}
-		if err := g.generateTemplateMap(output, dockerTemps, data); err != nil {
-			return err
-		}
-	}
+	// Docker templates are included in BaseTemplateMap
 
 	toolConv := func(t core.Tool) (string, interface{}) {
 		return t.Name, struct{ Tool core.Tool }{Tool: t}
 	}
-	if err := generateEntities(g, output, "src/tools", "templates/python/stdio/src/tools/tool.py.tmpl", data.Config.Tools, toolConv); err != nil {
+	if err := generateEntities(g, output, "src/tools", tmp.ToolTemplate(g.GetLanguage()), data.Config.Tools, toolConv); err != nil {
 		return err
 	}
 
 	resConv := func(r core.Resource) (string, interface{}) {
 		return r.Name, struct{ Resource core.Resource }{Resource: r}
 	}
-	if err := generateEntities(g, output, "src/resources", "templates/python/stdio/src/resources/resource.py.tmpl", data.Config.Resources, resConv); err != nil {
+	if err := generateEntities(g, output, "src/resources", tmp.ResourceTemplate(g.GetLanguage()), data.Config.Resources, resConv); err != nil {
 		return err
 	}
 
 	capConv := func(c core.Capability) (string, interface{}) {
 		return c.Name, struct{ Capability core.Capability }{Capability: c}
 	}
-	if err := generateEntities(g, output, "src/capabilities", "templates/python/stdio/src/capabilities/capability.py.tmpl", data.Config.Capabilities, capConv); err != nil {
+	if err := generateEntities(g, output, "src/capabilities", tmp.CapabilityTemplate(g.GetLanguage()), data.Config.Capabilities, capConv); err != nil {
 		return err
 	}
 

@@ -7,6 +7,7 @@ import (
 	"text/template"
 
 	"github.com/aawadall/mcpcli/internal/core"
+	tmp "github.com/aawadall/mcpcli/internal/generators/templates"
 	"github.com/fatih/color"
 )
 
@@ -54,14 +55,9 @@ func (g *NodeGenerator) createDirectoryStructure(output string) error {
 }
 
 func (g *NodeGenerator) generateFromTemplates(output string, data *core.TemplateData) error {
-	templates := map[string]string{
-		"templates/node/stdio/package.json.tmpl":              "package.json",
-		"templates/node/stdio/src/index.js.tmpl":              "src/index.js",
-		"templates/node/stdio/src/handlers/mcp.js.tmpl":       "src/handlers/mcp.js",
-		"templates/node/stdio/src/resources/registry.js.tmpl": "src/resources/registry.js",
-		"templates/node/stdio/README.md.tmpl":                 "README.md",
-		"templates/node/stdio/configs/mcp-config.json.tmpl":   "configs/mcp-config.json",
-		"templates/node/stdio/examples/example.js.tmpl":       "examples/example.js",
+	templates, err := tmp.BaseTemplateMap(g.GetLanguage(), data)
+	if err != nil {
+		return err
 	}
 
 	for tPath, outPath := range templates {
@@ -70,24 +66,12 @@ func (g *NodeGenerator) generateFromTemplates(output string, data *core.Template
 		}
 	}
 
-	if data.Config.Docker {
-		dockerTemps := map[string]string{
-			"templates/node/stdio/Dockerfile.tmpl":   "Dockerfile",
-			"templates/node/stdio/dockerignore.tmpl": ".dockerignore",
-		}
-		for tPath, outPath := range dockerTemps {
-			if err := g.generateTemplate(tPath, filepath.Join(output, outPath), data); err != nil {
-				return err
-			}
-		}
-	}
-
 	for _, tool := range data.Config.Tools {
 		td := struct {
 			Tool core.Tool
 		}{Tool: tool}
 		file := filepath.Join(output, "src/tools", tool.Name+".js")
-		if err := g.generateTemplate("templates/node/stdio/src/tools/tool.js.tmpl", file, td); err != nil {
+		if err := g.generateTemplate(tmp.ToolTemplate(g.GetLanguage()), file, td); err != nil {
 			return err
 		}
 	}
@@ -97,7 +81,7 @@ func (g *NodeGenerator) generateFromTemplates(output string, data *core.Template
 			Resource core.Resource
 		}{Resource: res}
 		file := filepath.Join(output, "src/resources", res.Name+".js")
-		if err := g.generateTemplate("templates/node/stdio/src/resources/resource.js.tmpl", file, rd); err != nil {
+		if err := g.generateTemplate(tmp.ResourceTemplate(g.GetLanguage()), file, rd); err != nil {
 			return err
 		}
 	}
@@ -107,7 +91,7 @@ func (g *NodeGenerator) generateFromTemplates(output string, data *core.Template
 			Capability core.Capability
 		}{Capability: cap}
 		file := filepath.Join(output, "src/capabilities", cap.Name+".js")
-		if err := g.generateTemplate("templates/node/stdio/src/capabilities/capability.js.tmpl", file, cd); err != nil {
+		if err := g.generateTemplate(tmp.CapabilityTemplate(g.GetLanguage()), file, cd); err != nil {
 			return err
 		}
 	}
