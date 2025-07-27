@@ -20,5 +20,12 @@ jobs:
       - name: Download dependencies
         run: go mod download
 
-      - name: Run tests
-        run: go test ./...
+      - name: Run tests with coverage
+        run: |
+          go test ./... -coverprofile=coverage.out -covermode=atomic
+          go tool cover -func=coverage.out
+      - name: Ensure coverage
+        run: |
+          pct=$(go tool cover -func=coverage.out | grep total | awk '{print substr($3, 1, length($3)-1)}')
+          echo "total coverage: $pct%"
+          if [ $(echo "$pct 85" | awk '{print ($1 < $2)}') -eq 1 ]; then exit 1; fi
