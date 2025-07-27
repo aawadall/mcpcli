@@ -55,3 +55,33 @@ func TestPythonGenerator_GenerateBasic(t *testing.T) {
 		}
 	}
 }
+
+func TestPythonGenerator_GenerateWithExtras(t *testing.T) {
+	tmpDir := t.TempDir()
+	cfg := &core.ProjectConfig{
+		Name:         "extras",
+		Language:     "python",
+		Transport:    "stdio",
+		Output:       tmpDir,
+		Tools:        []core.Tool{{Name: "tool"}},
+		Resources:    []core.Resource{{Name: "res"}},
+		Capabilities: []core.Capability{{Name: "cap"}},
+	}
+
+	g := NewPythonGenerator()
+	if err := g.Generate(cfg); err != nil {
+		t.Fatalf("unexpected error generating project: %v", err)
+	}
+
+	expected := []string{
+		filepath.Join(tmpDir, "src", "tools", "tool.py"),
+		filepath.Join(tmpDir, "src", "resources", "res.py"),
+		filepath.Join(tmpDir, "src", "capabilities", "cap.py"),
+	}
+
+	for _, f := range expected {
+		if _, err := os.Stat(f); err != nil {
+			t.Errorf("expected file %s to exist, got %v", f, err)
+		}
+	}
+}

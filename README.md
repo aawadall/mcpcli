@@ -101,6 +101,10 @@ A generated Node.js MCP server project includes:
 - `configs/mcp-config.json` - Server configuration
 - `Dockerfile` - Docker support (optional)
 
+## Testing
+
+Run `go test ./... -cover` to execute the unit tests. Overall coverage should remain above 85%.
+
 ## Contributing
 
 Contributions are welcome! Please open issues or pull requests.
