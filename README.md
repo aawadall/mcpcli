@@ -10,6 +10,7 @@ A CLI tool to scaffold Model Context Protocol (MCP) server projects in Go and ot
 > Learn more about the Model Context Protocol at the [official introduction page](https://modelcontextprotocol.io/introduction).
 
 ## Features
+
 - Generate new MCP server projects with a single command
 - Supports multiple languages (Go, Node.js, Java, Python)
 - Choose transport method (stdio, rest, websocket)
@@ -48,6 +49,7 @@ Or use interactive mode (if required options are missing):
 ```
 
 #### Generate Flags
+
 - `--name, -n`         Project name
 - `--language, -l`     Programming language (`golang`, `python`, `java`, `javascript`/Node.js)
 - `--transport, -t`    Transport method (`stdio`, `rest`, `websocket`)
@@ -69,6 +71,7 @@ Or use interactive mode (if no flags are provided):
 ```
 
 #### Test Flags
+
 - `--config, -c`         Path to MCP configuration file
 - `--all`                Test all components (resources, tools, capabilities, init)
 - `--resources`          Test resources
@@ -78,10 +81,12 @@ Or use interactive mode (if no flags are provided):
 - `--script, -f`         Path to test script file
 
 ### Global Flags
+
 - `--verbose, -v`   Enable verbose output
 - `--quiet, -q`     Suppress output
 
 ## Project Structure
+
 - `cmd/`         Entrypoint for the CLI
 - `internal/`    Core logic, generators, templates
 - `pkg/`         Shared packages
@@ -89,6 +94,7 @@ Or use interactive mode (if no flags are provided):
 ## Generated Project Example
 
 A generated Go MCP server project includes:
+
 - `cmd/server/main.go` - Main server entrypoint
 - `internal/handlers/` - Request handlers
 - `pkg/mcp/`           - MCP protocol types and client
@@ -97,6 +103,7 @@ A generated Go MCP server project includes:
 - `examples/`          - Example usage (optional)
 
 A generated Node.js MCP server project includes:
+
 - `src/index.js` - Main server entrypoint
 - `src/handlers/` - Request handlers
 - `configs/mcp-config.json` - Server configuration
