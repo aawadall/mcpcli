@@ -7,7 +7,7 @@ import (
 	"text/template"
 
 	"github.com/aawadall/mcpcli/internal/core"
-	"github.com/aawadall/mcpcli/internal/templates"
+	"github.com/aawadall/mcpcli/internal/generators/templates"
 	"github.com/fatih/color"
 )
 
