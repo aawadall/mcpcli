@@ -21,3 +21,24 @@ func TestFormatJSONError_Syntax(t *testing.T) {
 		t.Errorf("expected line and column info, got %v", ferr)
 	}
 }
+
+func TestFormatJSONError_Type(t *testing.T) {
+	data := []byte("{\"num\":\"bad\"}")
+	var v struct {
+		Num int `json:"num"`
+	}
+	err := json.Unmarshal(data, &v)
+	if err == nil {
+		t.Fatal("expected error")
+	}
+	ferr := FormatJSONError(data, err, "failed")
+	if ferr == nil || !strings.Contains(ferr.Error(), "line") {
+		t.Errorf("expected line/column info, got %v", ferr)
+	}
+}
+
+func TestLineAndColumnInvalidOffset(t *testing.T) {
+	if _, _, err := lineAndColumn([]byte("abc"), -1); err == nil {
+		t.Error("expected error for negative offset")
+	}
+}
