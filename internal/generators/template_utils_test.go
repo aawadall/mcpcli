@@ -4,12 +4,13 @@ import (
 	"testing"
 
 	"github.com/aawadall/mcpcli/internal/core"
+	tmp "github.com/aawadall/mcpcli/internal/generators/templates"
 )
 
 func TestBaseTemplateMap_Go(t *testing.T) {
 	cfg := &core.ProjectConfig{}
 	data := cfg.GetTemplateData()
-	m, err := BaseTemplateMap("go", data)
+	m, err := tmp.BaseTemplateMap("go", data)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -21,7 +22,7 @@ func TestBaseTemplateMap_Go(t *testing.T) {
 func TestBaseTemplateMap_Docker(t *testing.T) {
 	cfg := &core.ProjectConfig{Docker: true}
 	data := cfg.GetTemplateData()
-	m, err := BaseTemplateMap("python", data)
+	m, err := tmp.BaseTemplateMap("python", data)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -33,13 +34,13 @@ func TestBaseTemplateMap_Docker(t *testing.T) {
 func TestBaseTemplateMap_Invalid(t *testing.T) {
 	cfg := &core.ProjectConfig{}
 	data := cfg.GetTemplateData()
-	if _, err := BaseTemplateMap("invalid", data); err == nil {
+	if _, err := tmp.BaseTemplateMap("invalid", data); err == nil {
 		t.Error("expected error for invalid language")
 	}
 }
 
 func TestTemplateHelpers(t *testing.T) {
-	if ToolTemplate("go") == "" || ResourceTemplate("go") == "" || CapabilityTemplate("go") == "" {
+	if tmp.ToolTemplate("go") == "" || tmp.ResourceTemplate("go") == "" || tmp.CapabilityTemplate("go") == "" {
 		t.Error("expected template helper paths for go")
 	}
 }
