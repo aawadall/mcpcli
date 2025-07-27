@@ -7,7 +7,7 @@ import (
 	"text/template"
 
 	"github.com/aawadall/mcpcli/internal/core"
-	"github.com/aawadall/mcpcli/internal/generators/templates"
+	tmp "github.com/aawadall/mcpcli/internal/generators/templates"
 	"github.com/fatih/color"
 )
 
@@ -71,7 +71,7 @@ func (g *GoGenerator) createDirectoryStructure(output string) error {
 // generateFromTemplates generates all files using the template system
 func (g *GoGenerator) generateFromTemplates(output string, data *core.TemplateData) error {
 	// Define template files and their output paths
-	templates, err := templates.BaseTemplateMap(g.GetLanguage(), data)
+	templates, err := tmp.BaseTemplateMap(g.GetLanguage(), data)
 	if err != nil {
 		return err
 	}
@@ -92,7 +92,7 @@ func (g *GoGenerator) generateFromTemplates(output string, data *core.TemplateDa
 			Tool:       tool,
 		}
 		fileName := filepath.Join(output, "internal/tools", tool.Name+".go")
-		tmplPath := templates.ToolTemplate(g.GetLanguage())
+		tmplPath := tmp.ToolTemplate(g.GetLanguage())
 		if err := g.generateTemplate(tmplPath, fileName, toolData); err != nil {
 			return fmt.Errorf("failed to generate tool file for %s: %w", tool.Name, err)
 		}
@@ -108,7 +108,7 @@ func (g *GoGenerator) generateFromTemplates(output string, data *core.TemplateDa
 			Resource:   resource,
 		}
 		fileName := filepath.Join(output, "internal/resources", resource.Name+".go")
-		tmplPath := templates.ResourceTemplate(g.GetLanguage())
+		tmplPath := tmp.ResourceTemplate(g.GetLanguage())
 		if err := g.generateTemplate(tmplPath, fileName, resourceData); err != nil {
 			return fmt.Errorf("failed to generate resource file for %s: %w", resource.Name, err)
 		}
@@ -124,7 +124,7 @@ func (g *GoGenerator) generateFromTemplates(output string, data *core.TemplateDa
 			Capability: capability,
 		}
 		fileName := filepath.Join(output, "internal/capabilities", capability.Name+".go")
-		tmplPath := templates.CapabilityTemplate(g.GetLanguage())
+		tmplPath := tmp.CapabilityTemplate(g.GetLanguage())
 		if err := g.generateTemplate(tmplPath, fileName, capabilityData); err != nil {
 			return fmt.Errorf("failed to generate capability file for %s: %w", capability.Name, err)
 		}
