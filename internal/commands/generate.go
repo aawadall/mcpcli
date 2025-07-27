@@ -11,6 +11,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// GenerateOptions holds all configurable parameters for the generate command.
+// When running in interactive mode, unanswered fields will be prompted.
 type GenerateOptions struct {
 	Name         string
 	Language     string
@@ -25,6 +27,8 @@ type GenerateOptions struct {
 	Capabilities []core.Capability
 }
 
+// NewGenerateCmd creates the `generate` cobra command used to scaffold new MCP
+// server projects. It sets up flags, validation, and interactive prompts.
 func NewGenerateCmd() *cobra.Command {
 	opts := &GenerateOptions{}
 
