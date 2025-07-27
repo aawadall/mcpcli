@@ -75,14 +75,14 @@ func (g *PythonGenerator) generateFromTemplates(output string, data *core.Templa
 	resConv := func(r core.Resource) (string, interface{}) {
 		return r.Name, struct{ Resource core.Resource }{Resource: r}
 	}
-	if err := generateEntities(g, output, "src/resources", ResourceTemplate(g.GetLanguage()), data.Config.Resources, resConv); err != nil {
+	if err := generateEntities(g, output, "src/resources", tmp.ResourceTemplate(g.GetLanguage()), data.Config.Resources, resConv); err != nil {
 		return err
 	}
 
 	capConv := func(c core.Capability) (string, interface{}) {
 		return c.Name, struct{ Capability core.Capability }{Capability: c}
 	}
-	if err := generateEntities(g, output, "src/capabilities", CapabilityTemplate(g.GetLanguage()), data.Config.Capabilities, capConv); err != nil {
+	if err := generateEntities(g, output, "src/capabilities", tmp.CapabilityTemplate(g.GetLanguage()), data.Config.Capabilities, capConv); err != nil {
 		return err
 	}
 
