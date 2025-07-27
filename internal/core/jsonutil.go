@@ -24,7 +24,7 @@ func lineAndColumn(data []byte, offset int64) (line, column int) {
 	return
 }
 
-// formatJSONError adds line and column information to json errors when possible.
+// FormatJSONError adds line and column information to JSON errors when possible.
 func FormatJSONError(data []byte, err error, context string) error {
 	var syntaxErr *json.SyntaxError
 	var typeErr *json.UnmarshalTypeError
