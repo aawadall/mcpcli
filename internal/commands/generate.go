@@ -122,50 +122,22 @@ type basicAnswers struct {
 func buildBasicQuestions(opts *GenerateOptions) []*survey.Question {
 	qs := []*survey.Question{}
 	if opts.Name == "" {
-		qs = append(qs, &survey.Question{
-			Name:     "name",
-			Prompt:   &survey.Input{Message: "Project name:", Default: "my-mcp-server"},
-			Validate: survey.Required,
-		})
+		qs = append(qs, &survey.Question{Name: "name", Prompt: &survey.Input{Message: "Project name:", Default: "my-mcp-server"}, Validate: survey.Required})
 	}
 	if opts.Language == "" {
-		qs = append(qs, &survey.Question{
-			Name: "language",
-			Prompt: &survey.Select{
-				Message: "Select programming language:",
-				Options: []string{"golang", "python", "java", "javascript"},
-				Default: "golang",
-			},
-			Validate: survey.Required,
-		})
+		qs = append(qs, &survey.Question{Name: "language", Prompt: &survey.Select{Message: "Select programming language:", Options: []string{"golang", "python", "java", "javascript"}, Default: "golang"}, Validate: survey.Required})
 	}
 	if opts.Transport == "" {
-		qs = append(qs, &survey.Question{
-			Name: "transport",
-			Prompt: &survey.Select{
-				Message: "Choose transport method:",
-				Options: []string{"stdio", "rest", "websocket"},
-				Default: "stdio",
-			},
-		})
+		qs = append(qs, &survey.Question{Name: "transport", Prompt: &survey.Select{Message: "Choose transport method:", Options: []string{"stdio", "rest", "websocket"}, Default: "stdio"}})
 	}
 	if !opts.Docker {
-		qs = append(qs, &survey.Question{
-			Name:   "docker",
-			Prompt: &survey.Confirm{Message: "Include Docker support?", Default: true},
-		})
+		qs = append(qs, &survey.Question{Name: "docker", Prompt: &survey.Confirm{Message: "Include Docker support?", Default: true}})
 	}
 	if !opts.Examples {
-		qs = append(qs, &survey.Question{
-			Name:   "examples",
-			Prompt: &survey.Confirm{Message: "Include example resources and tools?", Default: true},
-		})
+		qs = append(qs, &survey.Question{Name: "examples", Prompt: &survey.Confirm{Message: "Include example resources and tools?", Default: true}})
 	}
 	if opts.Output == "" {
-		qs = append(qs, &survey.Question{
-			Name:   "output",
-			Prompt: &survey.Input{Message: "Output directory (leave empty to use project name):"},
-		})
+		qs = append(qs, &survey.Question{Name: "output", Prompt: &survey.Input{Message: "Output directory (leave empty to use project name):"}})
 	}
 	return qs
 }
