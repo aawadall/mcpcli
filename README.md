@@ -1,11 +1,12 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/7b1f68b2c73c49e19e13a7e25f9de2f8)](https://app.codacy.com/gh/aawadall/mcpcli/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/7b1f68b2c73c49e19e13a7e25f9de2f8)](https://app.codacy.com/gh/aawadall/mcpcli/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
+[![Release](https://img.shields.io/github/v/release/aawadall/mcpcli?label=release)](https://github.com/aawadall/mcpcli/releases)
 
 # mcpcli
 
 A CLI tool to scaffold Model Context Protocol (MCP) server projects in Go and other languages. It generates ready-to-use MCP server templates with support for multiple transports, Docker, and example resources/tools.
 
-**Current Version:** v0.4.2
+**Current Version:** v0.4.1
 
 > Learn more about the Model Context Protocol at the [official introduction page](https://modelcontextprotocol.io/introduction).
 
@@ -112,7 +113,7 @@ A generated Node.js MCP server project includes:
 ## Testing
 
 Run `go test ./... -cover` to execute the unit tests. Overall coverage should remain above 85%.
-See [the testing guide](doc/testing.md) for more details on running the tests for **mcpcli {{VERSION}}**.
+See [the testing guide](doc/testing.md) for more details on running the tests for **mcpcli v0.4.1**.
 All contributions must maintain this minimum coverage level.
 
 ## Contributing
