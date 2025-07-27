@@ -13,7 +13,8 @@ func lineAndColumn(data []byte, offset int64) (line, column int, err error) {
 	}
 	line = 1
 	column = 1
-	for i := int64(0); i < int64(len(data)) && i < offset; i++ {
+	dataLen := int64(len(data))
+	for i := int64(0); i < dataLen && i < offset; i++ {
 		if data[i] == '\n' {
 			line++
 			column = 1
