@@ -27,4 +27,4 @@
 
 ## 6. Separation of Concerns
 - CLI logic, code generation, and template data are separated into different packages
-- Templates are kept language- and transport-specific for clarity 
+- Templates are kept language- and transport-specific for clarity
