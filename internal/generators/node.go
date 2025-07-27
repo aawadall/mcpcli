@@ -7,6 +7,7 @@ import (
 	"text/template"
 
 	"github.com/aawadall/mcpcli/internal/core"
+	tmp "github.com/aawadall/mcpcli/internal/generators/templates"
 	"github.com/fatih/color"
 )
 
@@ -54,7 +55,7 @@ func (g *NodeGenerator) createDirectoryStructure(output string) error {
 }
 
 func (g *NodeGenerator) generateFromTemplates(output string, data *core.TemplateData) error {
-	templates, err := BaseTemplateMap(g.GetLanguage(), data)
+	templates, err := tmp.BaseTemplateMap(g.GetLanguage(), data)
 	if err != nil {
 		return err
 	}
@@ -70,7 +71,7 @@ func (g *NodeGenerator) generateFromTemplates(output string, data *core.Template
 			Tool core.Tool
 		}{Tool: tool}
 		file := filepath.Join(output, "src/tools", tool.Name+".js")
-		if err := g.generateTemplate(ToolTemplate(g.GetLanguage()), file, td); err != nil {
+		if err := g.generateTemplate(tmp.ToolTemplate(g.GetLanguage()), file, td); err != nil {
 			return err
 		}
 	}
@@ -80,7 +81,7 @@ func (g *NodeGenerator) generateFromTemplates(output string, data *core.Template
 			Resource core.Resource
 		}{Resource: res}
 		file := filepath.Join(output, "src/resources", res.Name+".js")
-		if err := g.generateTemplate(ResourceTemplate(g.GetLanguage()), file, rd); err != nil {
+		if err := g.generateTemplate(tmp.ResourceTemplate(g.GetLanguage()), file, rd); err != nil {
 			return err
 		}
 	}
@@ -90,7 +91,7 @@ func (g *NodeGenerator) generateFromTemplates(output string, data *core.Template
 			Capability core.Capability
 		}{Capability: cap}
 		file := filepath.Join(output, "src/capabilities", cap.Name+".js")
-		if err := g.generateTemplate(CapabilityTemplate(g.GetLanguage()), file, cd); err != nil {
+		if err := g.generateTemplate(tmp.CapabilityTemplate(g.GetLanguage()), file, cd); err != nil {
 			return err
 		}
 	}
