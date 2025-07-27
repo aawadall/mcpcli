@@ -52,29 +52,13 @@ func (g *JavaGenerator) createDirectoryStructure(output, pkg string) error {
 
 func (g *JavaGenerator) generateFromTemplates(output string, data *core.TemplateData) error {
 	pkgPath := filepath.Join(strings.Split(data.PackageName, ".")...)
-	templates := map[string]string{
-		"templates/java/stdio/pom.xml.tmpl":                                "pom.xml",
-		"templates/java/stdio/src/main/java/Main.java.tmpl":                filepath.Join("src", "main", "java", pkgPath, "Main.java"),
-		"templates/java/stdio/src/main/java/handlers/MCPHandler.java.tmpl": filepath.Join("src", "main", "java", pkgPath, "handlers", "MCPHandler.java"),
-		"templates/java/stdio/src/main/java/resources/Registry.java.tmpl":  filepath.Join("src", "main", "java", pkgPath, "resources", "Registry.java"),
-		"templates/java/stdio/README.md.tmpl":                              "README.md",
-		"templates/java/stdio/configs/mcp-config.json.tmpl":                "configs/mcp-config.json",
-		"templates/java/stdio/examples/Example.java.tmpl":                  "examples/Example.java",
+	templates, err := BaseTemplateMap(g.GetLanguage(), data)
+	if err != nil {
+		return err
 	}
 	for tPath, outPath := range templates {
 		if err := g.generateTemplate(tPath, filepath.Join(output, outPath), data); err != nil {
 			return err
-		}
-	}
-	if data.Config.Docker {
-		dockerTemps := map[string]string{
-			"templates/java/stdio/Dockerfile.tmpl":   "Dockerfile",
-			"templates/java/stdio/dockerignore.tmpl": ".dockerignore",
-		}
-		for tPath, outPath := range dockerTemps {
-			if err := g.generateTemplate(tPath, filepath.Join(output, outPath), data); err != nil {
-				return err
-			}
 		}
 	}
 	for _, tool := range data.Config.Tools {
@@ -83,7 +67,7 @@ func (g *JavaGenerator) generateFromTemplates(output string, data *core.Template
 			Tool        core.Tool
 		}{PackageName: data.PackageName, Tool: tool}
 		file := filepath.Join(output, "src", "main", "java", pkgPath, "tools", tool.Name+".java")
-		if err := g.generateTemplate("templates/java/stdio/src/main/java/tools/Tool.java.tmpl", file, td); err != nil {
+		if err := g.generateTemplate(ToolTemplate(g.GetLanguage()), file, td); err != nil {
 			return err
 		}
 	}
@@ -93,7 +77,7 @@ func (g *JavaGenerator) generateFromTemplates(output string, data *core.Template
 			Resource    core.Resource
 		}{PackageName: data.PackageName, Resource: res}
 		file := filepath.Join(output, "src", "main", "java", pkgPath, "resources", res.Name+".java")
-		if err := g.generateTemplate("templates/java/stdio/src/main/java/resources/Resource.java.tmpl", file, rd); err != nil {
+		if err := g.generateTemplate(ResourceTemplate(g.GetLanguage()), file, rd); err != nil {
 			return err
 		}
 	}
@@ -103,7 +87,7 @@ func (g *JavaGenerator) generateFromTemplates(output string, data *core.Template
 			Capability  core.Capability
 		}{PackageName: data.PackageName, Capability: cap}
 		file := filepath.Join(output, "src", "main", "java", pkgPath, "capabilities", cap.Name+".java")
-		if err := g.generateTemplate("templates/java/stdio/src/main/java/capabilities/Capability.java.tmpl", file, cd); err != nil {
+		if err := g.generateTemplate(CapabilityTemplate(g.GetLanguage()), file, cd); err != nil {
 			return err
 		}
 	}
