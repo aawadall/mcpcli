@@ -92,7 +92,7 @@ func loadMCPConfig(configPath string) (*core.MCPConfig, error) {
 	// If that fails, try to load as MCPConfig directly
 	var config core.MCPConfig
 	if err := json.Unmarshal(data, &config); err != nil {
-		return nil, fmt.Errorf("failed to parse config file: %w", err)
+		return nil, core.FormatJSONError(data, err, "failed to parse config file")
 	}
 
 	return &config, nil
