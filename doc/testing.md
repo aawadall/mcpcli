@@ -14,4 +14,4 @@ To check code coverage, run:
 go test ./internal/core -cover
 ```
 
-The test suite currently targets **mcpcli {{VERSION}}** and achieves over 85% coverage for the core package.
+The test suite currently targets **mcpcli 1.0.0** and achieves over 85% coverage for the core package.
