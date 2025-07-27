@@ -31,10 +31,16 @@ func FormatJSONError(data []byte, err error, context string) error {
 	var typeErr *json.UnmarshalTypeError
 	switch {
 	case errors.As(err, &syntaxErr):
-		l, c := lineAndColumn(data, syntaxErr.Offset)
+		l, c, lcErr := lineAndColumn(data, syntaxErr.Offset)
+		if lcErr != nil {
+			return fmt.Errorf("%s: could not determine line and column: %w", context, err)
+		}
 		return fmt.Errorf("%s at line %d, column %d: %w", context, l, c, err)
 	case errors.As(err, &typeErr):
-		l, c := lineAndColumn(data, typeErr.Offset)
+		l, c, lcErr := lineAndColumn(data, typeErr.Offset)
+		if lcErr != nil {
+			return fmt.Errorf("%s: could not determine line and column: %w", context, err)
+		}
 		return fmt.Errorf("%s at line %d, column %d: %w", context, l, c, err)
 	default:
 		return fmt.Errorf("%s: %w", context, err)
