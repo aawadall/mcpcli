@@ -7,9 +7,9 @@ import (
 )
 
 // lineAndColumn calculates 1-based line and column numbers from a byte offset.
-func lineAndColumn(data []byte, offset int64) (line, column int) {
+func lineAndColumn(data []byte, offset int64) (line, column int, err error) {
 	if offset < 0 {
-		return 0, 0
+		return 0, 0, fmt.Errorf("invalid offset: %d", offset)
 	}
 	line = 1
 	column = 1
