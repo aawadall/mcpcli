@@ -105,6 +105,7 @@ A generated Node.js MCP server project includes:
 ## Testing
 
 Run `go test ./... -cover` to execute the unit tests. Overall coverage should remain above 85%.
+All contributions must maintain this minimum coverage level.
 
 ## Contributing
 

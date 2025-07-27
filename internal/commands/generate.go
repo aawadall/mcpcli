@@ -11,6 +11,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// GenerateOptions holds all configurable parameters for the generate command.
+// When running in interactive mode, unanswered fields will be prompted.
 type GenerateOptions struct {
 	Name         string
 	Language     string
@@ -25,6 +27,8 @@ type GenerateOptions struct {
 	Capabilities []core.Capability
 }
 
+// NewGenerateCmd creates the `generate` cobra command used to scaffold new MCP
+// server projects. It sets up flags, validation, and interactive prompts.
 func NewGenerateCmd() *cobra.Command {
 	opts := &GenerateOptions{}
 
@@ -79,23 +83,53 @@ func needsInteractiveMode(opts *GenerateOptions) bool {
 
 // promptForOptions prompts the user for missing options interactively.
 func promptForOptions(opts *GenerateOptions) error {
-	questions := []*survey.Question{}
+	if err := askBasicOptions(opts); err != nil {
+		return err
+	}
+	if err := promptForTools(opts); err != nil {
+		return err
+	}
+	if err := promptForResources(opts); err != nil {
+		return err
+	}
+	return promptForCapabilities(opts)
+}
 
-	// Project name
+// askBasicOptions collects core project options interactively.
+// It updates the provided GenerateOptions with any answers.
+func askBasicOptions(opts *GenerateOptions) error {
+	questions := buildBasicQuestions(opts)
+	ans := basicAnswers{}
+	if len(questions) > 0 {
+		if err := survey.Ask(questions, &ans); err != nil {
+			return err
+		}
+	}
+	applyBasicAnswers(opts, ans)
+	return nil
+}
+
+type basicAnswers struct {
+	Name      string
+	Language  string
+	Transport string
+	Docker    bool
+	Examples  bool
+	Output    string
+}
+
+// buildBasicQuestions returns survey questions for unset basic options.
+func buildBasicQuestions(opts *GenerateOptions) []*survey.Question {
+	qs := []*survey.Question{}
 	if opts.Name == "" {
-		questions = append(questions, &survey.Question{
-			Name: "name",
-			Prompt: &survey.Input{
-				Message: "Project name:",
-				Default: "my-mcp-server",
-			},
+		qs = append(qs, &survey.Question{
+			Name:     "name",
+			Prompt:   &survey.Input{Message: "Project name:", Default: "my-mcp-server"},
 			Validate: survey.Required,
 		})
 	}
-
-	// Language selection
 	if opts.Language == "" {
-		questions = append(questions, &survey.Question{
+		qs = append(qs, &survey.Question{
 			Name: "language",
 			Prompt: &survey.Select{
 				Message: "Select programming language:",
@@ -105,10 +139,8 @@ func promptForOptions(opts *GenerateOptions) error {
 			Validate: survey.Required,
 		})
 	}
-
-	// Transport method
 	if opts.Transport == "" {
-		questions = append(questions, &survey.Question{
+		qs = append(qs, &survey.Question{
 			Name: "transport",
 			Prompt: &survey.Select{
 				Message: "Choose transport method:",
@@ -117,116 +149,71 @@ func promptForOptions(opts *GenerateOptions) error {
 			},
 		})
 	}
-
-	// Docker support
 	if !opts.Docker {
-		questions = append(questions, &survey.Question{
-			Name: "docker",
-			Prompt: &survey.Confirm{
-				Message: "Include Docker support?",
-				Default: true,
-			},
+		qs = append(qs, &survey.Question{
+			Name:   "docker",
+			Prompt: &survey.Confirm{Message: "Include Docker support?", Default: true},
 		})
 	}
-
-	// Examples
 	if !opts.Examples {
-		questions = append(questions, &survey.Question{
-			Name: "examples",
-			Prompt: &survey.Confirm{
-				Message: "Include example resources and tools?",
-				Default: true,
-			},
+		qs = append(qs, &survey.Question{
+			Name:   "examples",
+			Prompt: &survey.Confirm{Message: "Include example resources and tools?", Default: true},
 		})
 	}
-
-	// Output directory
 	if opts.Output == "" {
-		questions = append(questions, &survey.Question{
-			Name: "output",
-			Prompt: &survey.Input{
-				Message: "Output directory (leave empty to use project name):",
-			},
+		qs = append(qs, &survey.Question{
+			Name:   "output",
+			Prompt: &survey.Input{Message: "Output directory (leave empty to use project name):"},
 		})
 	}
+	return qs
+}
 
-	// Ask the questions
-	answers := struct {
-		Name      string
-		Language  string
-		Transport string
-		Docker    bool
-		Examples  bool
-		Output    string
-	}{}
-
-	// Run the survey if there are questions
-	if len(questions) > 0 {
-		err := survey.Ask(questions, &answers)
-		if err != nil {
-			return err
-		}
-		// Assign answers to options
-		if opts.Name == "" {
-			opts.Name = answers.Name
-		}
-
-		if opts.Language == "" {
-			opts.Language = answers.Language
-		}
-
-		if opts.Transport == "" {
-			opts.Transport = answers.Transport
-		}
-
-		if !opts.Docker {
-			opts.Docker = answers.Docker
-		}
-
-		if !opts.Examples {
-			opts.Examples = answers.Examples
-		}
-
-		if opts.Output == "" {
-			opts.Output = answers.Output
-		}
+// applyBasicAnswers applies the survey answers back to the options struct.
+func applyBasicAnswers(opts *GenerateOptions, ans basicAnswers) {
+	if opts.Name == "" {
+		opts.Name = ans.Name
 	}
+	if opts.Language == "" {
+		opts.Language = ans.Language
+	}
+	if opts.Transport == "" {
+		opts.Transport = ans.Transport
+	}
+	if !opts.Docker {
+		opts.Docker = ans.Docker
+	}
+	if !opts.Examples {
+		opts.Examples = ans.Examples
+	}
+	if opts.Output == "" {
+		opts.Output = ans.Output
+	}
+}
 
-	var addTools bool
-	survey.AskOne(&survey.Confirm{
-		Message: "Would you like to add tools?",
-		Default: false,
-	}, &addTools)
-
-	for addTools {
+// promptForTools interactively adds tool definitions to the options.
+func promptForTools(opts *GenerateOptions) error {
+	var add bool
+	survey.AskOne(&survey.Confirm{Message: "Would you like to add tools?", Default: false}, &add)
+	for add {
 		var tool core.Tool
 		survey.Ask([]*survey.Question{
-			{
-				Name:     "Name",
-				Prompt:   &survey.Input{Message: "Tool name:"},
-				Validate: survey.Required,
-			},
-			{
-				Name:   "Description",
-				Prompt: &survey.Input{Message: "Tool description:"},
-			},
+			{Name: "Name", Prompt: &survey.Input{Message: "Tool name:"}, Validate: survey.Required},
+			{Name: "Description", Prompt: &survey.Input{Message: "Tool description:"}},
 		}, &tool)
 		opts.Tools = append(opts.Tools, tool)
-
-		survey.AskOne(&survey.Confirm{
-			Message: "Add another tool?",
-			Default: false,
-		}, &addTools)
+		survey.AskOne(&survey.Confirm{Message: "Add another tool?", Default: false}, &add)
 	}
+	return nil
+}
 
-	var addResources bool
-	survey.AskOne(&survey.Confirm{
-		Message: "Would you like to add resources?",
-		Default: false,
-	}, &addResources)
-
-	for addResources {
-		var resource core.Resource
+// promptForResources interactively adds resource definitions to the options.
+func promptForResources(opts *GenerateOptions) error {
+	var add bool
+	survey.AskOne(&survey.Confirm{Message: "Would you like to add resources?", Default: false}, &add)
+	for add {
+		var res core.Resource
 		survey.Ask([]*survey.Question{
 			{
 				Name:     "Name",
@@ -240,23 +227,19 @@ func promptForOptions(opts *GenerateOptions) error {
 					Options: []string{string(core.ResourceTypeDatabase), string(core.ResourceTypeFilesystem), string(core.ResourceTypeTime)},
 				},
 			},
-		}, &resource)
-		opts.Resources = append(opts.Resources, resource)
-
-		survey.AskOne(&survey.Confirm{
-			Message: "Add another resource?",
-			Default: false,
-		}, &addResources)
+		}, &res)
+		opts.Resources = append(opts.Resources, res)
+		survey.AskOne(&survey.Confirm{Message: "Add another resource?", Default: false}, &add)
 	}
+	return nil
+}
 
-	var addCapabilities bool
-	survey.AskOne(&survey.Confirm{
-		Message: "Would you like to add capabilities?",
-		Default: false,
-	}, &addCapabilities)
-
-	for addCapabilities {
-		var capability core.Capability
+// promptForCapabilities interactively adds capability definitions to the options.
+func promptForCapabilities(opts *GenerateOptions) error {
+	var add bool
+	survey.AskOne(&survey.Confirm{Message: "Would you like to add capabilities?", Default: false}, &add)
+	for add {
+		var cap core.Capability
 		survey.Ask([]*survey.Question{
 			{
 				Name:     "Name",
@@ -267,15 +250,10 @@ func promptForOptions(opts *GenerateOptions) error {
 				Name:   "Enabled",
 				Prompt: &survey.Confirm{Message: "Enable this capability?"},
 			},
-		}, &capability)
-		opts.Capabilities = append(opts.Capabilities, capability)
-
-		survey.AskOne(&survey.Confirm{
-			Message: "Add another capability?",
-			Default: false,
-		}, &addCapabilities)
+		}, &cap)
+		opts.Capabilities = append(opts.Capabilities, cap)
+		survey.AskOne(&survey.Confirm{Message: "Add another capability?", Default: false}, &add)
 	}
-
 	return nil
 }
 
@@ -317,7 +295,6 @@ func contains(slice []string, item string) bool {
 
 // generateProject creates the project structure based on the provided options.
 func generateProject(opts *GenerateOptions) error {
-	// Create project configuration
 	config := &core.ProjectConfig{
 		Name:         opts.Name,
 		Language:     opts.Language,
@@ -330,66 +307,76 @@ func generateProject(opts *GenerateOptions) error {
 		Capabilities: opts.Capabilities,
 	}
 
-	// Check if the directory exists and handle the --force flag
-	if _, err := os.Stat(opts.Output); err == nil {
-		if opts.Force {
-			if err := os.RemoveAll(opts.Output); err != nil {
-				return fmt.Errorf("failed to remove existing directory: %w", err)
-			}
-		} else {
-			return fmt.Errorf("output directory %s already exists, use --force to overwrite", opts.Output)
-		}
-	} else if !os.IsNotExist(err) {
-		return fmt.Errorf("failed to check output directory: %w", err)
+	if err := prepareDirectory(opts.Output, opts.Force); err != nil {
+		return err
 	}
 
-	// Create output directory
-	if err := os.MkdirAll(opts.Output, 0755); err != nil {
-		return fmt.Errorf("failed to create output directory: %w", err)
+	generator, err := selectGenerator(opts.Language)
+	if err != nil {
+		return err
 	}
-
-	// Generate project files based on the language
-	var generator generators.Generator
-
-	switch opts.Language {
-	case "golang":
-		generator = generators.NewGolangGenerator()
-	case "javascript":
-		generator = generators.NewNodeGenerator()
-	case "java":
-		generator = generators.NewJavaGenerator()
-	case "python":
-		generator = generators.NewPythonGenerator()
-	default:
-		return fmt.Errorf("language %s is not supported yet", opts.Language)
-	}
-
-	// Generate the project files
 	if err := generator.Generate(config); err != nil {
-		// rollback the created directory if generation fails
 		os.RemoveAll(opts.Output)
 		return fmt.Errorf("failed to generate project: %w", err)
 	}
 
-	// Success message
+	printNextSteps(opts)
+	return nil
+}
+
+// prepareDirectory creates the output directory, removing it first when force is true.
+func prepareDirectory(path string, force bool) error {
+	if stat, err := os.Stat(path); err == nil {
+		if force {
+			if err := os.RemoveAll(path); err != nil {
+				return fmt.Errorf("failed to remove existing directory: %w", err)
+			}
+		} else if stat != nil {
+			return fmt.Errorf("output directory %s already exists, use --force to overwrite", path)
+		}
+	} else if !os.IsNotExist(err) {
+		return fmt.Errorf("failed to check output directory: %w", err)
+	}
+	if err := os.MkdirAll(path, 0755); err != nil {
+		return fmt.Errorf("failed to create output directory: %w", err)
+	}
+	return nil
+}
+
+// selectGenerator returns a project generator based on the chosen language.
+func selectGenerator(lang string) (generators.Generator, error) {
+	switch lang {
+	case "golang":
+		return generators.NewGolangGenerator(), nil
+	case "javascript":
+		return generators.NewNodeGenerator(), nil
+	case "java":
+		return generators.NewJavaGenerator(), nil
+	case "python":
+		return generators.NewPythonGenerator(), nil
+	}
+	return nil, fmt.Errorf("language %s is not supported yet", lang)
+}
+
+// printNextSteps outputs instructions for running the generated project.
+func printNextSteps(opts *GenerateOptions) {
 	fmt.Printf("✅ Successfully generated MCP server project: %s\n", opts.Name)
 	path, _ := filepath.Abs(opts.Output)
 	fmt.Printf("📁 Location: %s\n", path)
 	fmt.Printf("🚀 Next steps:\n")
 	fmt.Printf("   cd %s\n", opts.Output)
 
-	if opts.Language == "go" || opts.Language == "golang" {
+	switch opts.Language {
+	case "go", "golang":
 		fmt.Printf("   go mod tidy\n")
 		fmt.Printf("   go run cmd/%s/main.go\n", opts.Transport)
-	} else if opts.Language == "javascript" {
+	case "javascript":
 		fmt.Printf("   npm install\n")
 		fmt.Printf("   node src/index.js\n")
-	} else if opts.Language == "java" {
+	case "java":
 		fmt.Printf("   mvn package\n")
 		fmt.Printf("   java -jar target/%s-1.0.0.jar\n", opts.Name)
-	} else if opts.Language == "python" {
+	case "python":
 		fmt.Printf("   python src/main.py\n")
 	}
-
-	return nil
 }
