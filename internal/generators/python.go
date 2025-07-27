@@ -7,6 +7,7 @@ import (
 	"text/template"
 
 	"github.com/aawadall/mcpcli/internal/core"
+	tmp "github.com/aawadall/mcpcli/internal/generators/templates"
 	"github.com/fatih/color"
 )
 
@@ -54,7 +55,7 @@ func (g *PythonGenerator) createDirectoryStructure(output string) error {
 
 // generateFromTemplates renders all static and dynamic templates for the project.
 func (g *PythonGenerator) generateFromTemplates(output string, data *core.TemplateData) error {
-	templates, err := BaseTemplateMap(g.GetLanguage(), data)
+	templates, err := tmp.BaseTemplateMap(g.GetLanguage(), data)
 	if err != nil {
 		return err
 	}
@@ -67,7 +68,7 @@ func (g *PythonGenerator) generateFromTemplates(output string, data *core.Templa
 	toolConv := func(t core.Tool) (string, interface{}) {
 		return t.Name, struct{ Tool core.Tool }{Tool: t}
 	}
-	if err := generateEntities(g, output, "src/tools", ToolTemplate(g.GetLanguage()), data.Config.Tools, toolConv); err != nil {
+	if err := generateEntities(g, output, "src/tools", tmp.ToolTemplate(g.GetLanguage()), data.Config.Tools, toolConv); err != nil {
 		return err
 	}
 
