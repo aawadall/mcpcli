@@ -53,8 +53,9 @@ func (c *MCPClient) ReadResponse() (*Response, error) {
 		return nil, fmt.Errorf("no response received")
 	}
 	var response Response
-	if err := json.Unmarshal([]byte(scanner.Text()), &response); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
+	text := scanner.Text()
+	if err := json.Unmarshal([]byte(text), &response); err != nil {
+		return nil, FormatJSONError([]byte(text), err, "failed to unmarshal response")
 	}
 	return &response, nil
 }

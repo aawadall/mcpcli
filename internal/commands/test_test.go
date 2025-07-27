@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/aawadall/mcpcli/internal/core"
@@ -45,5 +46,19 @@ func TestTestCmd_FlagParsingAndExecution(t *testing.T) {
 	scriptVal, _ := cmd.Flags().GetString("script")
 	if scriptVal != script {
 		t.Errorf("expected script %s, got %s", script, scriptVal)
+	}
+}
+
+func TestLoadMCPConfig_InvalidJSON(t *testing.T) {
+	tmpDir := t.TempDir()
+	bad := filepath.Join(tmpDir, "bad.json")
+	os.WriteFile(bad, []byte("{invalid}"), 0644)
+
+	_, err := loadMCPConfig(bad)
+	if err == nil {
+		t.Fatal("expected error for invalid json")
+	}
+	if !strings.Contains(err.Error(), "line") || !strings.Contains(err.Error(), "column") {
+		t.Errorf("expected line and column info in error, got %v", err)
 	}
 }
