@@ -8,6 +8,7 @@ import (
 	"text/template"
 
 	"github.com/aawadall/mcpcli/internal/core"
+	tmp "github.com/aawadall/mcpcli/internal/generators/templates"
 	"github.com/fatih/color"
 )
 
@@ -52,7 +53,7 @@ func (g *JavaGenerator) createDirectoryStructure(output, pkg string) error {
 
 func (g *JavaGenerator) generateFromTemplates(output string, data *core.TemplateData) error {
 	pkgPath := filepath.Join(strings.Split(data.PackageName, ".")...)
-	templates, err := BaseTemplateMap(g.GetLanguage(), data)
+	templates, err := tmp.BaseTemplateMap(g.GetLanguage(), data)
 	if err != nil {
 		return err
 	}
@@ -67,7 +68,7 @@ func (g *JavaGenerator) generateFromTemplates(output string, data *core.Template
 			Tool        core.Tool
 		}{PackageName: data.PackageName, Tool: tool}
 		file := filepath.Join(output, "src", "main", "java", pkgPath, "tools", tool.Name+".java")
-		if err := g.generateTemplate(ToolTemplate(g.GetLanguage()), file, td); err != nil {
+		if err := g.generateTemplate(tmp.ToolTemplate(g.GetLanguage()), file, td); err != nil {
 			return err
 		}
 	}
@@ -77,7 +78,7 @@ func (g *JavaGenerator) generateFromTemplates(output string, data *core.Template
 			Resource    core.Resource
 		}{PackageName: data.PackageName, Resource: res}
 		file := filepath.Join(output, "src", "main", "java", pkgPath, "resources", res.Name+".java")
-		if err := g.generateTemplate(ResourceTemplate(g.GetLanguage()), file, rd); err != nil {
+		if err := g.generateTemplate(tmp.ResourceTemplate(g.GetLanguage()), file, rd); err != nil {
 			return err
 		}
 	}
@@ -87,7 +88,7 @@ func (g *JavaGenerator) generateFromTemplates(output string, data *core.Template
 			Capability  core.Capability
 		}{PackageName: data.PackageName, Capability: cap}
 		file := filepath.Join(output, "src", "main", "java", pkgPath, "capabilities", cap.Name+".java")
-		if err := g.generateTemplate(CapabilityTemplate(g.GetLanguage()), file, cd); err != nil {
+		if err := g.generateTemplate(tmp.CapabilityTemplate(g.GetLanguage()), file, cd); err != nil {
 			return err
 		}
 	}
