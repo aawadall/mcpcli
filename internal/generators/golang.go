@@ -107,7 +107,7 @@ func (g *GoGenerator) generateFromTemplates(output string, data *core.TemplateDa
 			Resource:   resource,
 		}
 		fileName := filepath.Join(output, "internal/resources", resource.Name+".go")
-		tmplPath := ResourceTemplate(g.GetLanguage())
+		tmplPath := templates.ResourceTemplate(g.GetLanguage())
 		if err := g.generateTemplate(tmplPath, fileName, resourceData); err != nil {
 			return fmt.Errorf("failed to generate resource file for %s: %w", resource.Name, err)
 		}
@@ -123,7 +123,7 @@ func (g *GoGenerator) generateFromTemplates(output string, data *core.TemplateDa
 			Capability: capability,
 		}
 		fileName := filepath.Join(output, "internal/capabilities", capability.Name+".go")
-		tmplPath := CapabilityTemplate(g.GetLanguage())
+		tmplPath := templates.CapabilityTemplate(g.GetLanguage())
 		if err := g.generateTemplate(tmplPath, fileName, capabilityData); err != nil {
 			return fmt.Errorf("failed to generate capability file for %s: %w", capability.Name, err)
 		}
