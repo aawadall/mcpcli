@@ -7,6 +7,7 @@ import (
 	"text/template"
 
 	"github.com/aawadall/mcpcli/internal/core"
+	"github.com/aawadall/mcpcli/internal/templates"
 	"github.com/fatih/color"
 )
 
@@ -70,7 +71,7 @@ func (g *GoGenerator) createDirectoryStructure(output string) error {
 // generateFromTemplates generates all files using the template system
 func (g *GoGenerator) generateFromTemplates(output string, data *core.TemplateData) error {
 	// Define template files and their output paths
-	templates, err := BaseTemplateMap(g.GetLanguage(), data)
+	templates, err := templates.BaseTemplateMap(g.GetLanguage(), data)
 	if err != nil {
 		return err
 	}
@@ -91,7 +92,7 @@ func (g *GoGenerator) generateFromTemplates(output string, data *core.TemplateDa
 			Tool:       tool,
 		}
 		fileName := filepath.Join(output, "internal/tools", tool.Name+".go")
-		tmplPath := ToolTemplate(g.GetLanguage())
+		tmplPath := templates.ToolTemplate(g.GetLanguage())
 		if err := g.generateTemplate(tmplPath, fileName, toolData); err != nil {
 			return fmt.Errorf("failed to generate tool file for %s: %w", tool.Name, err)
 		}
