@@ -62,3 +62,58 @@ func TestLoadMCPConfig_InvalidJSON(t *testing.T) {
 		t.Errorf("expected line and column info in error, got %v", err)
 	}
 }
+
+func TestNeedsTestInteractiveMode(t *testing.T) {
+	cases := []struct {
+		name string
+		opts TestOptions
+		want bool
+	}{
+		{"none", TestOptions{}, true},
+		{"all", TestOptions{TestAll: true}, false},
+		{"script", TestOptions{ScriptFile: "file"}, false},
+		{"config", TestOptions{Config: "cfg"}, false},
+	}
+	for _, c := range cases {
+		if got := needsTestInteractiveMode(&c.opts); got != c.want {
+			t.Errorf("%s: expected %v, got %v", c.name, c.want, got)
+		}
+	}
+}
+
+func TestLoadMCPConfig_Valid(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	// Direct MCPConfig
+	cfg := &core.MCPConfig{Name: "direct", Version: "0.4.1"}
+	data, _ := json.Marshal(cfg)
+	direct := filepath.Join(tmpDir, "direct.json")
+	if err := os.WriteFile(direct, data, 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	got, err := loadMCPConfig(direct)
+	if err != nil {
+		t.Fatalf("load direct: %v", err)
+	}
+	if got.Name != "direct" {
+		t.Errorf("expected name 'direct', got %s", got.Name)
+	}
+
+	// ProjectConfig
+	pc := core.NewProjectConfig()
+	pc.Name = "proj"
+	pData, _ := json.Marshal(pc)
+	proj := filepath.Join(tmpDir, "proj.json")
+	if err := os.WriteFile(proj, pData, 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	got, err = loadMCPConfig(proj)
+	if err != nil {
+		t.Fatalf("load project: %v", err)
+	}
+	if got.Name != "proj" {
+		t.Errorf("expected name 'proj', got %s", got.Name)
+	}
+}
