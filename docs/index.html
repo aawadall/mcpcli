@@ -7,22 +7,205 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="header"></div>
-    <div id="hero"></div>
-    <div id="features"></div>
-    <div id="getting-started"></div>
-    <div id="footer"></div>
-    
+<header>
+    <div class="container">
+        <div class="header-content">
+            <a href="index.html" class="logo">MCP Cookiecutter</a>
+            <nav class="nav-links">
+                <a href="features.html">Features</a>
+                <a href="getting-started.html">Getting Started</a>
+                <a href="https://github.com/aawadall/mcpcli">GitHub</a>
+            </nav>
+        </div>
+    </div>
+</header>
+<section class="hero">
+    <div class="container">
+        <h1>MCP Cookiecutter</h1>
+        <p>Generate Model Context Protocol servers with ease. Bootstrap your MCP projects in seconds.</p>
+        <div class="cta-buttons">
+            <a href="getting-started.html" class="btn btn-primary">Get Started</a>
+            <a href="https://github.com/aawadall/mcpcli" class="btn btn-secondary">View on GitHub</a>
+            <a href="https://modelcontextprotocol.io/introduction" class="btn btn-secondary" target="_blank" rel="noopener">Learn about MCP</a>
+        </div>
+    </div>
+</section>
+<section class="features" id="features">
+    <div class="container">
+        <h2 class="section-title">Features</h2>
+        <p class="section-subtitle">Everything you need to build MCP servers quickly and efficiently</p>
+        <div class="features-grid">
+            <div class="feature-card">
+                <span class="badge-implemented">Implemented</span>
+                <div class="feature-icon">🚀</div>
+                <h3>Quick Setup</h3>
+                <p>Generate a complete MCP server project structure in seconds with pre-configured templates.</p>
+            </div>
+            <div class="feature-card">
+                <span class="badge-implemented">Go</span>
+                <span class="badge-implemented">Node.js</span>
+                <span class="badge-implemented">Java</span>
+                <span class="badge-implemented">Python</span>
+                <div class="feature-icon">🔧</div>
+                <h3>Multiple Languages</h3>
+                <p>Support for Go, Node.js, Java, and Python <span class="badge-implemented">(available)</span>. Choose your preferred language and get started immediately.</p>
+            </div>
+            <div class="feature-card">
+                <span class="badge-implemented">Stdio</span>
+                <span class="badge-planned">REST, WebSocket (planned)</span>
+                <div class="feature-icon">🔗</div>
+                <h3>Flexible Transports</h3>
+                <p>Stdio <span class="badge-implemented">(available)</span>, REST and WebSocket <span class="badge-planned">(planned)</span> transport methods for your server.</p>
+            </div>
+            <div class="feature-card">
+                <span class="badge-implemented">Implemented</span>
+                <div class="feature-icon">✅</div>
+                <h3>Built-in Testing</h3>
+                <p>Test your MCP server's resources, tools, capabilities, and initialization directly from the CLI.</p>
+            </div>
+            <div class="feature-card">
+                <span class="badge-implemented">Implemented</span>
+                <div class="feature-icon">📦</div>
+                <h3>Ready to Deploy</h3>
+                <p>Generated projects include Docker configurations and deployment scripts for easy hosting.</p>
+            </div>
+            <div class="feature-card">
+                <span class="badge-implemented">Implemented</span>
+                <div class="feature-icon">🎯</div>
+                <h3>Best Practices</h3>
+                <p>Templates follow MCP best practices and include example implementations for common use cases.</p>
+            </div>
+            <div class="feature-card">
+                <span class="badge-implemented">Implemented</span>
+                <div class="feature-icon">🔌</div>
+                <h3>Extensible</h3>
+                <p>Easy to extend with custom templates and configurations to match your specific needs.</p>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="getting-started" id="getting-started">
+    <div class="container">
+        <h2 class="section-title">Getting Started</h2>
+        <p class="section-subtitle">Get up and running in minutes</p>
+        <p><strong>Version:</strong> v0.4.1 (latest)</p>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Install</h3>
+                <p>Clone the repository and build the CLI:</p>
+                <div class="code-block">
+                    git clone https://github.com/aawadall/mcpcli.git
+                    cd mcpcli
+                    go build -o mcpcli ./cmd/mcpcli
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>Generate</h3>
+                <p>Create your MCP server project (non-interactive or interactive):</p>
+                <div class="code-block">
+                    # Non-interactive (all options specified)
+                    ./mcpcli generate my-server --language golang --transport stdio --docker --examples
+
+                    # Interactive (missing options will prompt)
+                    ./mcpcli generate
+                </div>
+                <p><strong>Flags:</strong></p>
+                <ul>
+                    <li><code>--name, -n</code> Project name</li>
+                    <li><code>--language, -l</code> Programming language (<code>golang</code>, <code>python</code>, <code>java</code>, <code>javascript</code>/Node.js)</li>
+                    <li><code>--transport, -t</code> Transport method (<code>stdio</code>, <code>rest</code>, <code>websocket</code>)</li>
+                    <li><code>--docker, -d</code> Include Docker support</li>
+                    <li><code>--examples, -e</code> Include example resources and tools</li>
+                    <li><code>--output, -o</code> Output directory (default: project name)</li>
+                    <li><code>--force, -f</code> Overwrite existing directory</li>
+                </ul>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>Develop</h3>
+                <p>Start building your MCP server:</p>
+                <label for="lang-select" class="language-select">Language:</label>
+                <select id="lang-select" class="language-select">
+                    <option value="golang">Go</option>
+                    <option value="javascript">Node.js</option>
+                    <option value="python">Python</option>
+                    <option value="java">Java</option>
+                </select>
+                <div class="code-block lang-cmd" data-lang="golang">
+                    cd my-mcp-server
+                    go run cmd/server/main.go
+                </div>
+                <div class="code-block lang-cmd" data-lang="javascript" style="display:none">
+                    cd my-mcp-server
+                    npm start
+                </div>
+                <div class="code-block lang-cmd" data-lang="python" style="display:none">
+                    cd my-mcp-server
+                    python main.py
+                </div>
+                <div class="code-block lang-cmd" data-lang="java" style="display:none">
+                    cd my-mcp-server
+                    mvn spring-boot:run
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <h3>Test</h3>
+                <p>Validate your server works correctly:</p>
+                <div class="code-block">
+                    # Run all tests with config file
+                    ./mcpcli test --config configs/mcp-config.json --all
+
+                    # Interactive mode (prompts for what to test)
+                    ./mcpcli test
+                </div>
+                <p><strong>Flags:</strong></p>
+                <ul>
+                    <li><code>--config, -c</code> Path to MCP configuration file</li>
+                    <li><code>--all</code> Test all components (resources, tools, capabilities, init)</li>
+                    <li><code>--resources</code> Test resources</li>
+                    <li><code>--tools</code> Test tools</li>
+                    <li><code>--capabilities</code> Test capabilities</li>
+                    <li><code>--init</code> Test initialization</li>
+                    <li><code>--script, -f</code> Path to test script file</li>
+                </ul>
+                <p>Run tests with <code>-cover</code> and keep coverage above <strong>85%</strong>.</p>
+            </div>
+        </div>
+        <div style="margin-top:2rem">
+            <h3>Global Flags</h3>
+            <ul>
+                <li><code>--verbose, -v</code> Enable verbose output</li>
+                <li><code>--quiet, -q</code> Suppress output</li>
+            </ul>
+        </div>
+    </div>
     <script>
-        async function loadContent() {
-            const sections = ['header', 'hero', 'features', 'getting-started', 'footer'];
-            for (const section of sections) {
-                const response = await fetch(`${section}.html`);
-                const content = await response.text();
-                document.getElementById(section).innerHTML = content;
+        document.addEventListener('DOMContentLoaded', function() {
+            const select = document.getElementById('lang-select');
+            const blocks = document.querySelectorAll('.lang-cmd');
+            if (select) {
+                select.addEventListener('change', function() {
+                    blocks.forEach(function(b) {
+                        b.style.display = b.dataset.lang === select.value ? 'block' : 'none';
+                    });
+                });
             }
-        }
-        loadContent();
+        });
     </script>
+</section>
+<footer>
+    <div class="container">
+        <div class="footer-links">
+            <a href="https://github.com/aawadall/mcpcli">GitHub</a>
+            <a href="https://github.com/aawadall/mcpcli/issues">Issues</a>
+            <a href="https://github.com/aawadall/mcpcli/blob/main/LICENSE">License</a>
+            <a href="https://modelcontextprotocol.io/introduction" target="_blank" rel="noopener">MCP Protocol</a>
+        </div>
+        <p>&copy; 2025 MCP Cookiecutter. Open source project.</p>
+    </div>
+</footer>
 </body>
 </html>
