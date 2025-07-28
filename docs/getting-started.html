@@ -1,3 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP Cookiecutter - Getting Started</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+    <div class="container">
+        <div class="header-content">
+            <a href="index.html" class="logo">MCP Cookiecutter</a>
+            <nav class="nav-links">
+                <a href="features.html">Features</a>
+                <a href="getting-started.html">Getting Started</a>
+                <a href="https://github.com/aawadall/mcpcli">GitHub</a>
+            </nav>
+        </div>
+    </div>
+</header>
 <section class="getting-started" id="getting-started">
     <div class="container">
         <h2 class="section-title">Getting Started</h2>
@@ -9,9 +30,9 @@
                 <h3>Install</h3>
                 <p>Clone the repository and build the CLI:</p>
                 <div class="code-block">
-git clone https://github.com/aawadall/mcpcli.git
-cd mcpcli
-go build -o mcpcli ./cmd/mcpcli
+                    git clone https://github.com/aawadall/mcpcli.git
+                    cd mcpcli
+                    go build -o mcpcli ./cmd/mcpcli
                 </div>
             </div>
             <div class="step">
@@ -19,11 +40,11 @@ go build -o mcpcli ./cmd/mcpcli
                 <h3>Generate</h3>
                 <p>Create your MCP server project (non-interactive or interactive):</p>
                 <div class="code-block">
-# Non-interactive (all options specified)
-./mcpcli generate my-server --language golang --transport stdio --docker --examples
+                    # Non-interactive (all options specified)
+                    ./mcpcli generate my-server --language golang --transport stdio --docker --examples
 
-# Interactive (missing options will prompt)
-./mcpcli generate
+                    # Interactive (missing options will prompt)
+                    ./mcpcli generate
                 </div>
                 <p><strong>Flags:</strong></p>
                 <ul>
@@ -48,20 +69,20 @@ go build -o mcpcli ./cmd/mcpcli
                     <option value="java">Java</option>
                 </select>
                 <div class="code-block lang-cmd" data-lang="golang">
-cd my-mcp-server
-go run cmd/server/main.go
+                    cd my-mcp-server
+                    go run cmd/server/main.go
                 </div>
                 <div class="code-block lang-cmd" data-lang="javascript" style="display:none">
-cd my-mcp-server
-npm start
+                    cd my-mcp-server
+                    npm start
                 </div>
                 <div class="code-block lang-cmd" data-lang="python" style="display:none">
-cd my-mcp-server
-python main.py
+                    cd my-mcp-server
+                    python main.py
                 </div>
                 <div class="code-block lang-cmd" data-lang="java" style="display:none">
-cd my-mcp-server
-mvn spring-boot:run
+                    cd my-mcp-server
+                    mvn spring-boot:run
                 </div>
             </div>
             <div class="step">
@@ -69,11 +90,11 @@ mvn spring-boot:run
                 <h3>Test</h3>
                 <p>Validate your server works correctly:</p>
                 <div class="code-block">
-# Run all tests with config file
-./mcpcli test --config configs/mcp-config.json --all
+                    # Run all tests with config file
+                    ./mcpcli test --config configs/mcp-config.json --all
 
-# Interactive mode (prompts for what to test)
-./mcpcli test
+                    # Interactive mode (prompts for what to test)
+                    ./mcpcli test
                 </div>
                 <p><strong>Flags:</strong></p>
                 <ul>
@@ -83,7 +104,7 @@ mvn spring-boot:run
                     <li><code>--tools</code> Test tools</li>
                     <li><code>--capabilities</code> Test capabilities</li>
                     <li><code>--init</code> Test initialization</li>
-                <li><code>--script, -f</code> Path to test script file</li>
+                    <li><code>--script, -f</code> Path to test script file</li>
                 </ul>
                 <p>Run tests with <code>-cover</code> and keep coverage above <strong>85%</strong>.</p>
             </div>
@@ -110,3 +131,16 @@ mvn spring-boot:run
         });
     </script>
 </section>
+<footer>
+    <div class="container">
+        <div class="footer-links">
+            <a href="https://github.com/aawadall/mcpcli">GitHub</a>
+            <a href="https://github.com/aawadall/mcpcli/issues">Issues</a>
+            <a href="https://github.com/aawadall/mcpcli/blob/main/LICENSE">License</a>
+            <a href="https://modelcontextprotocol.io/introduction" target="_blank" rel="noopener">MCP Protocol</a>
+        </div>
+        <p>&copy; 2025 MCP Cookiecutter. Open source project.</p>
+    </div>
+</footer>
+</body>
+</html>
