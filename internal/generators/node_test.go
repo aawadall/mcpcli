@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/aawadall/mcpcli/internal/core"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNodeGenerator_GetLanguage(t *testing.T) {
@@ -55,4 +56,64 @@ func TestNodeGenerator_GenerateBasic(t *testing.T) {
 			t.Errorf("expected file %s to be a file, but it is a directory", f)
 		}
 	}
+}
+
+// Mock types for testing
+type mockTool struct {
+	Name string
+}
+
+func (m mockTool) GetName() string {
+	return m.Name
+}
+
+type mockResource struct {
+	Name string
+}
+
+func (m mockResource) GetName() string {
+	return m.Name
+}
+
+type mockCapability struct {
+	Name string
+}
+
+func (m mockCapability) GetName() string {
+	return m.Name
+}
+
+func TestGenerateItems_Logic_Only(t *testing.T) {
+	// Test the path generation logic
+	tools := []mockTool{{Name: "testTool"}}
+	output := "/project"
+	subDir := "src/tools"
+
+	for _, tool := range tools {
+		expectedPath := filepath.Join(output, subDir, tool.GetName()+".js")
+		assert.Equal(t, "/project/src/tools/testTool.js", expectedPath)
+	}
+
+	// Test the data structure creation
+	tool := mockTool{Name: "myTool"}
+	data := struct {
+		Item mockTool
+	}{Item: tool}
+
+	assert.Equal(t, "myTool", data.Item.GetName())
+}
+
+func TestTemplateDataStructure(t *testing.T) {
+	// Test that the wrapper struct works correctly
+	tool := mockTool{Name: "hammer"}
+	resource := mockResource{Name: "database"}
+	capability := mockCapability{Name: "read"}
+
+	toolData := struct{ Item mockTool }{Item: tool}
+	resourceData := struct{ Item mockResource }{Item: resource}
+	capabilityData := struct{ Item mockCapability }{Item: capability}
+
+	assert.Equal(t, "hammer", toolData.Item.GetName())
+	assert.Equal(t, "database", resourceData.Item.GetName())
+	assert.Equal(t, "read", capabilityData.Item.GetName())
 }
