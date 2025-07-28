@@ -61,45 +61,49 @@ func (g *NodeGenerator) generateFromTemplates(output string, data *core.Template
 		return err
 	}
 
+	// Generate the main project files
 	for tPath, outPath := range templates {
 		if err := g.generateTemplate(tPath, filepath.Join(output, outPath), data); err != nil {
 			return err
 		}
 	}
 
-	for _, tool := range data.Config.Tools {
-		td := struct {
-			Tool core.Tool
-		}{Tool: tool}
-		file := filepath.Join(output, "src/tools", tool.Name+".js")
-		if err := g.generateTemplate(tmp.ToolTemplate(g.GetLanguage()), file, td); err != nil {
-			return err
-		}
+	// Generate tools
+	if err := generateItems(g, output, "src/tools", data.Config.Tools, tmp.ToolTemplate(g.GetLanguage())); err != nil {
+		return err
 	}
 
-	for _, res := range data.Config.Resources {
-		rd := struct {
-			Resource core.Resource
-		}{Resource: res}
-		file := filepath.Join(output, "src/resources", res.Name+".js")
-		if err := g.generateTemplate(tmp.ResourceTemplate(g.GetLanguage()), file, rd); err != nil {
-			return err
-		}
+	// generate resources
+	if err := generateItems(g, output, "src/resources", data.Config.Resources, tmp.ResourceTemplate(g.GetLanguage())); err != nil {
+		return err
 	}
 
-	for _, cap := range data.Config.Capabilities {
-		cd := struct {
-			Capability core.Capability
-		}{Capability: cap}
-		file := filepath.Join(output, "src/capabilities", cap.Name+".js")
-		if err := g.generateTemplate(tmp.CapabilityTemplate(g.GetLanguage()), file, cd); err != nil {
-			return err
-		}
+	// generate capabilities
+	if err := generateItems(g, output, "src/capabilities", data.Config.Capabilities, tmp.CapabilityTemplate(g.GetLanguage())); err != nil {
+		return err
 	}
 
 	return nil
 }
 
+// Generate Items
+func generateItems[T interface{ interface{ GetName() string } }](g *NodeGenerator, output, subDir string, items []T, templatePath string) error {
+	for _, item := range items {
+		// create wrapper struct with the item
+		data := struct {
+			Item T
+		}{Item: item}
+
+		// generate the file path
+		filePath := filepath.Join(output, subDir, item.GetName()+".js")
+		if err := g.generateTemplate(templatePath, filePath, data); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// generateTemplate reads a template file, executes it with the provided data, and writes the output to the specified path.
 func (g *NodeGenerator) generateTemplate(tPath, outPath string, data interface{}) error {
 	content, err := TemplatesFS.ReadFile(tPath)
 	if err != nil {

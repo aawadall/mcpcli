@@ -33,3 +33,18 @@ func IsValidResourceType(t string) bool {
 		return false
 	}
 }
+
+// GetName returns the name of the tool
+func (t Tool) GetName() string {
+	return t.Name
+}
+
+// GetName returns the name of the resource
+func (r Resource) GetName() string {
+	return r.Name
+}
+
+// GetName returns the name of the capability
+func (c Capability) GetName() string {
+	return c.Name
+}
