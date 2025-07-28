@@ -12,6 +12,18 @@ import (
 var version = "0.4.1"
 
 func main() {
+	// Create the root command
+	rootCmd := makeRootCommand()
+
+	// Execute the root command
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		os.Exit(1)
+	}
+}
+
+// make root command
+func makeRootCommand() *cobra.Command {
 	rootCmd := &cobra.Command{
 		Use:     "mcpcli",
 		Short:   "A CLI tool for MCP (Model Context Protocol) development",
@@ -28,8 +40,5 @@ func main() {
 	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "Enable verbose output")
 	rootCmd.PersistentFlags().BoolP("quiet", "q", false, "Suppress output")
 
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
-	}
+	return rootCmd
 }
