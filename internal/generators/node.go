@@ -87,7 +87,7 @@ func (g *NodeGenerator) generateFromTemplates(output string, data *core.Template
 }
 
 // Generate Items
-func generateItems[T interface{ interface{ GetName() string } }](g *NodeGenerator, output, subDir string, items []T, templatePath string) error {
+func generateItems[T interface{ GetName() string }](g *NodeGenerator, output, subDir string, items []T, templatePath string) error {
 	for _, item := range items {
 		// create wrapper struct with the item
 		data := struct {
