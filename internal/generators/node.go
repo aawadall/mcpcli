@@ -86,7 +86,10 @@ func (g *NodeGenerator) generateFromTemplates(output string, data *core.Template
 	return nil
 }
 
-// Generate Items
+// generateItems creates files for a slice of items that implement the GetName() method.
+// It uses the specified template and writes the generated files to the given subdirectory
+// within the output directory. Each item's name, as returned by GetName(), is used to
+// determine the filename.
 func generateItems[T interface{ GetName() string }](g *NodeGenerator, output, subDir string, items []T, templatePath string) error {
 	for _, item := range items {
 		// create wrapper struct with the item
