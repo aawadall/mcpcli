@@ -40,9 +40,28 @@ go build -o mcpcli ./cmd/mcpcli
                 <div class="step-number">3</div>
                 <h3>Develop</h3>
                 <p>Start building your MCP server:</p>
-                <div class="code-block">
+                <label for="lang-select" class="language-select">Language:</label>
+                <select id="lang-select" class="language-select">
+                    <option value="golang">Go</option>
+                    <option value="javascript">Node.js</option>
+                    <option value="python">Python</option>
+                    <option value="java">Java</option>
+                </select>
+                <div class="code-block lang-cmd" data-lang="golang">
 cd my-mcp-server
 go run cmd/server/main.go
+                </div>
+                <div class="code-block lang-cmd" data-lang="javascript" style="display:none">
+cd my-mcp-server
+npm start
+                </div>
+                <div class="code-block lang-cmd" data-lang="python" style="display:none">
+cd my-mcp-server
+python main.py
+                </div>
+                <div class="code-block lang-cmd" data-lang="java" style="display:none">
+cd my-mcp-server
+mvn spring-boot:run
                 </div>
             </div>
             <div class="step">
@@ -77,4 +96,17 @@ go run cmd/server/main.go
             </ul>
         </div>
     </div>
-</section> 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const select = document.getElementById('lang-select');
+            const blocks = document.querySelectorAll('.lang-cmd');
+            if (select) {
+                select.addEventListener('change', function() {
+                    blocks.forEach(function(b) {
+                        b.style.display = b.dataset.lang === select.value ? 'block' : 'none';
+                    });
+                });
+            }
+        });
+    </script>
+</section>

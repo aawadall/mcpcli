@@ -21,6 +21,7 @@ func (g *JavaGenerator) GetLanguage() string { return "java" }
 
 func (g *JavaGenerator) GetSupportedTransports() []string { return []string{"stdio"} }
 
+// Generate scaffolds a Java project using the provided configuration.
 func (g *JavaGenerator) Generate(config *core.ProjectConfig) error {
 	data := config.GetTemplateData()
 	if err := g.createDirectoryStructure(config.Output, data.PackageName); err != nil {
