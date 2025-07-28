@@ -13,5 +13,6 @@ To check code coverage, run:
 ```bash
 go test ./internal/core -cover
 ```
-
 The test suite currently targets **mcpcli v0.4.1** and achieves over 85% coverage for the core package.
+
+Additional tests cover `internal/commands/test.go` to validate the test command behavior.

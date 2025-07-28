@@ -1,3 +1,4 @@
+// Package commands holds the Cobra commands used by mcpcli.
 package commands
 
 import (
@@ -22,6 +23,7 @@ const (
 	emojiWarn   = "⚠️"
 )
 
+// TestOptions contains flags for the `test` command.
 type TestOptions struct {
 	Config           string
 	TestAll          bool
@@ -32,10 +34,13 @@ type TestOptions struct {
 	ScriptFile       string
 }
 
+// needsTestInteractiveMode returns true if no test flags are set and
+// the command should prompt the user interactively.
 func needsTestInteractiveMode(opts *TestOptions) bool {
 	return !opts.TestAll && !opts.TestResources && !opts.TestTools && !opts.TestCapabilities && !opts.TestInit && opts.ScriptFile == "" && opts.Config == ""
 }
 
+// promptForTestOptions displays an interactive survey to choose which tests to run.
 func promptForTestOptions(opts *TestOptions) error {
 	choices := []string{"Resources", "Tools", "Capabilities", "Initialization", "All"}
 	selected := []string{}
@@ -75,6 +80,8 @@ func promptForTestOptions(opts *TestOptions) error {
 	return nil
 }
 
+// loadMCPConfig reads a configuration file which may be either an MCPConfig
+// or a ProjectConfig and returns the resulting MCPConfig.
 func loadMCPConfig(configPath string) (*core.MCPConfig, error) {
 	data, err := os.ReadFile(configPath)
 	if err != nil {
@@ -98,6 +105,7 @@ func loadMCPConfig(configPath string) (*core.MCPConfig, error) {
 	return &config, nil
 }
 
+// NewTestCmd creates the `test` cobra command.
 func NewTestCmd() *cobra.Command {
 	opts := &TestOptions{}
 
