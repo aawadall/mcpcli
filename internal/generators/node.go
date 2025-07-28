@@ -26,6 +26,7 @@ func (g *NodeGenerator) GetSupportedTransports() []string {
 	return []string{"stdio"}
 }
 
+// Generate scaffolds a Node.js project using the provided configuration.
 func (g *NodeGenerator) Generate(config *core.ProjectConfig) error {
 	data := config.GetTemplateData()
 	if err := g.createDirectoryStructure(config.Output); err != nil {
