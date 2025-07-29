@@ -3,6 +3,8 @@ package commands
 import (
 	"os"
 	"testing"
+
+	"github.com/spf13/cobra"
 )
 
 func TestNeedsInteractiveMode(t *testing.T) {
@@ -57,3 +59,47 @@ func TestSelectGenerator(t *testing.T) {
 		t.Fatal("expected error for unsupported language")
 	}
 }
+func TestAddFlags(t *testing.T) {
+	cmd := &cobra.Command{}
+	opts := &GenerateOptions{}
+
+	
+	addFlags(cmd, opts)
+
+	if cmd.Flags().Lookup("name") == nil {
+		t.Fatal("expected 'name' flag to be added")
+	}
+	if cmd.Flags().Lookup("language") == nil {
+		t.Fatal("expected 'language' flag to be added")
+	}
+	if cmd.Flags().Lookup("transport") == nil {
+		t.Fatal("expected 'transport' flag to be added")
+	}
+	if cmd.Flags().Lookup("docker") == nil {
+		t.Fatal("expected 'docker' flag to be added")
+	}
+	if cmd.Flags().Lookup("examples") == nil {
+		t.Fatal("expected 'examples' flag to be added")
+	}
+	if cmd.Flags().Lookup("output") == nil {
+		t.Fatal("expected 'output' flag to be added")
+	}
+	if cmd.Flags().Lookup("force") == nil {
+		t.Fatal("expected 'force' flag to be added")
+	}
+	
+}
+
+func TestNewGenerateCmd(t *testing.T) {
+	cmd := NewGenerateCmd()
+	if cmd.Use != "generate [name]" {
+		t.Fatalf("expected command use to be 'generate [name]', got %s", cmd.Use)
+	}
+	if len(cmd.Aliases) != 2 || cmd.Aliases[0] != "gen" || cmd.Aliases[1] != "g" {
+		t.Fatalf("expected aliases to be 'gen' and 'g', got %v", cmd.Aliases)
+	}
+	if cmd.Short != "Generate a new MCP server project" {
+		t.Fatalf("expected short description to match, got %s", cmd.Short)
+	}
+}
+
