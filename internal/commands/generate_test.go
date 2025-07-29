@@ -87,7 +87,7 @@ func TestAddFlags(t *testing.T) {
 	if cmd.Flags().Lookup("force") == nil {
 		t.Fatal("expected 'force' flag to be added")
 	}
-	// END: Test adding flags
+	
 }
 
 func TestNewGenerateCmd(t *testing.T) {
