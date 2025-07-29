@@ -63,7 +63,7 @@ func TestAddFlags(t *testing.T) {
 	cmd := &cobra.Command{}
 	opts := &GenerateOptions{}
 
-	// BEGIN: Test adding flags
+	
 	addFlags(cmd, opts)
 
 	if cmd.Flags().Lookup("name") == nil {
