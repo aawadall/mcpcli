@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testing"
 
+	survey "github.com/AlecAivazis/survey/v2"
 	"github.com/aawadall/mcpcli/internal/core"
 )
 
