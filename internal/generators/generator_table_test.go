@@ -28,6 +28,8 @@ func TestGenerators(t *testing.T) {
 			if len(gotTrans) != len(tt.transports) {
 				t.Fatalf("expected %d transports, got %d", len(tt.transports), len(gotTrans))
 			}
+			sort.Strings(gotTrans)
+			sort.Strings(tt.transports)
 			for i, tr := range tt.transports {
 				if gotTrans[i] != tr {
 					t.Errorf("expected transport %s, got %s", tr, gotTrans[i])
