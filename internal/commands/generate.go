@@ -65,6 +65,13 @@ func NewGenerateCmd() *cobra.Command {
 	}
 
 	// Add flags
+	addFlags(cmd, opts)
+
+	return cmd
+}
+
+// Add flags to the generate command.
+func addFlags(cmd *cobra.Command, opts *GenerateOptions) {
 	cmd.Flags().StringVarP(&opts.Name, "name", "n", "", "MCP project name")
 	cmd.Flags().StringVarP(&opts.Language, "language", "l", "", "Programming language (e.g., golang, python, java)")
 	cmd.Flags().StringVarP(&opts.Transport, "transport", "t", "", "Transport method (e.g., stdio, rest, websocket)")
@@ -72,8 +79,6 @@ func NewGenerateCmd() *cobra.Command {
 	cmd.Flags().BoolVarP(&opts.Examples, "examples", "e", false, "Include example resources and tools")
 	cmd.Flags().StringVarP(&opts.Output, "output", "o", "", "Output directory (default to project name)")
 	cmd.Flags().BoolVarP(&opts.Force, "force", "f", false, "Overwrite existing directory")
-
-	return cmd
 }
 
 // needsInteractiveMode checks if the options are incomplete and requires user input.
