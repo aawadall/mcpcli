@@ -7,13 +7,14 @@ import (
 	"strings"
 	"testing"
 
+	survey "github.com/AlecAivazis/survey/v2"
 	"github.com/aawadall/mcpcli/internal/core"
 )
 
 func writeTempConfig(t *testing.T, dir string) string {
 	cfg := &core.MCPConfig{
 		Name:      "test",
-		Version:   "0.4.2",
+		Version:   "0.4.1",
 		Transport: core.Transport{Type: "stdio"},
 	}
 	data, err := json.Marshal(cfg)
@@ -85,7 +86,7 @@ func TestLoadMCPConfig_Valid(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	// Direct MCPConfig
-	cfg := &core.MCPConfig{Name: "direct", Version: "0.4.2"}
+	cfg := &core.MCPConfig{Name: "direct", Version: "0.4.1"}
 	data, _ := json.Marshal(cfg)
 	direct := filepath.Join(tmpDir, "direct.json")
 	if err := os.WriteFile(direct, data, 0644); err != nil {
@@ -135,5 +136,34 @@ func TestNewTestCmd_HasFlags(t *testing.T) {
 		if cmd.Flags().Lookup(f) == nil {
 			t.Errorf("flag %s not defined", f)
 		}
+	}
+}
+func TestPromptForTestOptions_SelectAll(t *testing.T) {
+	orig := survey.AskOne
+	defer func() { survey.AskOne = orig }()
+	call := 0
+	survey.AskOne = func(prompt interface{}, response interface{}, opts ...interface{}) error {
+		call++
+		switch call {
+		case 1:
+			if r, ok := response.(*[]string); ok {
+				*r = []string{"All"}
+			}
+		case 2:
+			if r, ok := response.(*string); ok {
+				*r = "mycfg.json"
+			}
+		}
+		return nil
+	}
+	opts := &TestOptions{}
+	if err := promptForTestOptions(opts); err != nil {
+		t.Fatalf("prompt failed: %v", err)
+	}
+	if !opts.TestAll {
+		t.Errorf("expected TestAll true")
+	}
+	if opts.Config != "mycfg.json" {
+		t.Errorf("expected config 'mycfg.json', got %s", opts.Config)
 	}
 }

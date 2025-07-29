@@ -9,6 +9,11 @@ require (
 	github.com/stretchr/testify v1.6.1
 )
 
+replace github.com/AlecAivazis/survey/v2 => ./internal/stub/survey
+replace github.com/spf13/cobra => ./internal/stub/cobra
+replace github.com/fatih/color => ./internal/stub/color
+replace github.com/stretchr/testify => ./internal/stub/testify
+
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
