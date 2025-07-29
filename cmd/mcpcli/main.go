@@ -8,7 +8,7 @@ import (
 )
 
 // version is the current release tag for the CLI.
-var version = "0.4.1"
+var version = "0.4.2"
 
 func main() {
 	// Create the root command
