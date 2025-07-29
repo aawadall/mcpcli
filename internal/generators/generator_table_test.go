@@ -29,8 +29,10 @@ func TestGenerators(t *testing.T) {
 				t.Fatalf("expected %d transports, got %d", len(tt.transports), len(gotTrans))
 			}
 			sort.Strings(gotTrans)
-			sort.Strings(tt.transports)
-			for i, tr := range tt.transports {
+			expectedTrans := make([]string, len(tt.transports))
+			copy(expectedTrans, tt.transports)
+			sort.Strings(expectedTrans)
+			for i, tr := range expectedTrans {
 				if gotTrans[i] != tr {
 					t.Errorf("expected transport %s, got %s", tr, gotTrans[i])
 				}
