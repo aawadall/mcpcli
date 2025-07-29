@@ -1,3 +1,3 @@
 module github.com/stretchr/testify
 
-go 1.22
+go 1.22.7
