@@ -57,3 +57,33 @@ func TestJavaGenerator_GenerateBasic(t *testing.T) {
 		}
 	}
 }
+
+func TestJavaGenerator_GenerateWithExtras(t *testing.T) {
+	tmpDir := t.TempDir()
+	cfg := &core.ProjectConfig{
+		Name:         "extrajava",
+		Language:     "java",
+		Transport:    "stdio",
+		Output:       tmpDir,
+		Tools:        []core.Tool{{Name: "Hammer"}},
+		Resources:    []core.Resource{{Name: "Nail"}},
+		Capabilities: []core.Capability{{Name: "Build"}},
+	}
+
+	g := NewJavaGenerator()
+	if err := g.Generate(cfg); err != nil {
+		t.Fatalf("unexpected error generating project: %v", err)
+	}
+
+	pkg := cfg.GetTemplateData().PackageName
+	expected := []string{
+		filepath.Join(tmpDir, "src", "main", "java", pkg, "tools", "Hammer.java"),
+		filepath.Join(tmpDir, "src", "main", "java", pkg, "resources", "Nail.java"),
+		filepath.Join(tmpDir, "src", "main", "java", pkg, "capabilities", "Build.java"),
+	}
+	for _, f := range expected {
+		if _, err := os.Stat(f); err != nil {
+			t.Errorf("expected file %s to exist, got %v", f, err)
+		}
+	}
+}

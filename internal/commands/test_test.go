@@ -117,3 +117,23 @@ func TestLoadMCPConfig_Valid(t *testing.T) {
 		t.Errorf("expected name 'proj', got %s", got.Name)
 	}
 }
+
+func TestLoadMCPConfig_FileNotFound(t *testing.T) {
+	_, err := loadMCPConfig("no-such-file.json")
+	if err == nil {
+		t.Fatal("expected error for missing file")
+	}
+	if !strings.Contains(err.Error(), "failed to read config file") {
+		t.Errorf("unexpected error: %v", err)
+	}
+}
+
+func TestNewTestCmd_HasFlags(t *testing.T) {
+	cmd := NewTestCmd()
+	flags := []string{"config", "all", "resources", "tools", "capabilities", "init", "script"}
+	for _, f := range flags {
+		if cmd.Flags().Lookup(f) == nil {
+			t.Errorf("flag %s not defined", f)
+		}
+	}
+}
