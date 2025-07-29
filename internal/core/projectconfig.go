@@ -22,7 +22,7 @@ type ProjectConfig struct {
 // NewProjectConfig creates a new project configuration with defaults
 func NewProjectConfig() *ProjectConfig {
 	return &ProjectConfig{
-		Version:   "0.4.1",
+		Version:   "0.4.2",
 		CreatedAt: time.Now(),
 	}
 }
