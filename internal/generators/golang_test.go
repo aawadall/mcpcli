@@ -57,5 +57,31 @@ func TestGoGenerator_generateTemplate_invalidPath(t *testing.T) {
 	}
 }
 
-// Note: More comprehensive tests for generateFromTemplates and Generate would require
-// integration-style tests with actual template files and a mock config.
+func TestGoGenerator_GenerateWithExtras(t *testing.T) {
+	tmpDir := t.TempDir()
+	cfg := &core.ProjectConfig{
+		Name:         "extras",
+		Language:     "go",
+		Transport:    "stdio",
+		Output:       tmpDir,
+		Tools:        []core.Tool{{Name: "Hammer"}},
+		Resources:    []core.Resource{{Name: "Nail", Type: string(core.ResourceTypeFilesystem)}},
+		Capabilities: []core.Capability{{Name: "Build"}},
+	}
+
+	g := NewGolangGenerator()
+	if err := g.Generate(cfg); err != nil {
+		t.Fatalf("unexpected error generating project: %v", err)
+	}
+
+	expected := []string{
+		filepath.Join(tmpDir, "internal", "tools", "Hammer.go"),
+		filepath.Join(tmpDir, "internal", "resources", "Nail.go"),
+		filepath.Join(tmpDir, "internal", "capabilities", "Build.go"),
+	}
+	for _, f := range expected {
+		if _, err := os.Stat(f); err != nil {
+			t.Errorf("expected file %s to exist, got %v", f, err)
+		}
+	}
+}
