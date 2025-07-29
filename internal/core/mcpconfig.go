@@ -1,6 +1,6 @@
 package core
 
-// MCPConfig represents the MCP server configuration
+// MCPConfig represents the configuration file used by an MCP server.
 type MCPConfig struct {
 	Schema       string       `json:"$schema"`
 	Name         string       `json:"name"`
@@ -15,7 +15,8 @@ type MCPConfig struct {
 	Resources    []Resource   `json:"resources,omitempty"`
 }
 
-// NewMCPConfig creates a new MCP configuration
+// NewMCPConfig returns an MCPConfig initialized with default values
+// including a MIT license and stdio transport.
 func NewMCPConfig(name, version, description string, tools []Tool, resources []Resource) *MCPConfig {
 	return &MCPConfig{
 		Schema:      "https://schemas.modelcontextprotocol.org/server-config.json",

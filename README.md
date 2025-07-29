@@ -6,7 +6,7 @@
 
 A CLI tool to scaffold Model Context Protocol (MCP) server projects in Go and other languages. It generates ready-to-use MCP server templates with support for multiple transports, Docker, and example resources/tools.
 
-**Current Version:** v0.4.1
+**Current Version:** v0.4.1 (latest release)
 
 > Learn more about the Model Context Protocol at the [official introduction page](https://modelcontextprotocol.io/introduction).
 
@@ -114,7 +114,7 @@ A generated Node.js MCP server project includes:
 
 Run `go test ./... -cover` to execute the unit tests. Overall coverage should remain above 85%.
 Recent additions include tests for `internal/commands/test.go` to ensure the CLI testing workflow behaves as expected.
-See [the testing guide](doc/testing.md) for more details on running the tests for **mcpcli v0.4.1**.
+See [the testing guide](doc/testing.md) for more details on running the tests for **mcpcli v0.4.1 (latest)**.
 All contributions must maintain this minimum coverage level.
 
 ## Contributing

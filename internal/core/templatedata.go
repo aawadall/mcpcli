@@ -1,6 +1,6 @@
 package core
 
-// TemplateData holds data for template rendering
+// TemplateData holds information used when rendering server templates
 type TemplateData struct {
 	Config      *ProjectConfig
 	MCPConfig   *MCPConfig

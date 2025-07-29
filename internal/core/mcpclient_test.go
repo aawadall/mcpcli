@@ -2,7 +2,10 @@ package core
 
 import (
 	"bytes"
+	"errors"
+	"fmt"
 	"io"
+	"strings"
 	"testing"
 )
 
@@ -100,5 +103,75 @@ func TestMCPClientCallHelpers(t *testing.T) {
 	c.PrintInfo("info %d", 2)
 	if !bytes.Contains(errBuf.Bytes(), []byte("err 1")) || !bytes.Contains(errBuf.Bytes(), []byte("info 2")) {
 		t.Errorf("stderr not written correctly: %s", errBuf.String())
+	}
+}
+func TestSanitizeURIEmpty(t *testing.T) {
+	if _, err := sanitizeURI("   "); err == nil {
+		t.Error("expected error for empty uri")
+	}
+}
+
+type failWriter struct{}
+
+func (failWriter) Write(p []byte) (int, error) { return 0, fmt.Errorf("write fail") }
+
+type failReader struct{}
+
+func (failReader) Read(p []byte) (int, error) { return 0, fmt.Errorf("read fail") }
+
+func TestSendRequestError(t *testing.T) {
+	c := NewMCPClientWithIO(bytes.NewBuffer(nil), failWriter{}, io.Discard)
+	if err := c.SendRequest(&Request{Method: "x"}); err == nil {
+		t.Error("expected write error")
+	}
+}
+
+func TestReadResponseErrors(t *testing.T) {
+	c := NewMCPClientWithIO(failReader{}, io.Discard, io.Discard)
+	if _, err := c.ReadResponse(); err == nil || !strings.Contains(err.Error(), "failed to read response") {
+		t.Fatalf("unexpected error %v", err)
+	}
+
+	c = NewMCPClientWithIO(bytes.NewBufferString("bad\n"), io.Discard, io.Discard)
+	if _, err := c.ReadResponse(); err == nil || !strings.Contains(err.Error(), "failed to unmarshal response") {
+		t.Fatalf("expected json error, got %v", err)
+	}
+
+	c = NewMCPClientWithIO(bytes.NewBuffer(nil), io.Discard, io.Discard)
+	if _, err := c.ReadResponse(); err == nil || !strings.Contains(err.Error(), "no response") {
+		t.Fatalf("expected no response error, got %v", err)
+	}
+}
+
+func TestCallError(t *testing.T) {
+	c := NewMCPClientWithIO(bytes.NewBuffer(nil), failWriter{}, io.Discard)
+	if _, err := c.Call("m", nil, 1); err == nil || !strings.Contains(err.Error(), "write fail") {
+		t.Fatalf("expected send error, got %v", err)
+	}
+}
+
+func TestNewMCPConfigAndSetTransport(t *testing.T) {
+	cfg := NewMCPConfig("app", "0.1.0", "desc", nil, nil)
+	if cfg.License != "MIT" || cfg.Transport.Type != "stdio" {
+		t.Fatalf("unexpected defaults %+v", cfg)
+	}
+	cfg.SetTransport("rest", map[string]interface{}{"port": 80})
+	if cfg.Transport.Type != "rest" || cfg.Transport.Options["port"] != 80 {
+		t.Fatalf("set transport failed %+v", cfg.Transport)
+	}
+}
+
+func TestLineAndColumnValid(t *testing.T) {
+	data := []byte("a\nbc\nd")
+	l, c, err := lineAndColumn(data, 5)
+	if err != nil || l != 3 || c != 1 {
+		t.Fatalf("expected line 3 col 1 got %d %d err %v", l, c, err)
+	}
+}
+
+func TestFormatJSONErrorDefault(t *testing.T) {
+	err := FormatJSONError([]byte("{}"), errors.New("boom"), "context")
+	if err == nil || !strings.Contains(err.Error(), "context") {
+		t.Fatalf("unexpected error %v", err)
 	}
 }
