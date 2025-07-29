@@ -1,6 +1,6 @@
 module github.com/aawadall/mcpcli
 
-go 1.21.11
+go 1.22.7
 
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.7
