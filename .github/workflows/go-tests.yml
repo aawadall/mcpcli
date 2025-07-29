@@ -15,7 +15,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.21'
+          go-version: '1.22.7'
 
       - name: Download dependencies
         run: go mod download
@@ -25,13 +25,13 @@ jobs:
           go test ./... -coverprofile=coverage.out -covermode=atomic
           go tool cover -func=coverage.out
       - name: Convert coverage to LCOV
-        uses: jandelgado/gcov2lcov-action@v1
+        uses: jandelgado/gcov2lcov-action@v1.1.1
         with:
           infile: coverage.out
           outfile: coverage.lcov
 
       - name: Codacy coverage reporter
-        uses: codacy/codacy-coverage-reporter-action@v1
+        uses: codacy/codacy-coverage-reporter-action@v1.3.0
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
           coverage-reports: coverage.lcov
