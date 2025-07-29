@@ -137,3 +137,32 @@ func TestNewTestCmd_HasFlags(t *testing.T) {
 		}
 	}
 }
+func TestPromptForTestOptions_SelectAll(t *testing.T) {
+	orig := survey.AskOne
+	defer func() { survey.AskOne = orig }()
+	call := 0
+	survey.AskOne = func(prompt interface{}, response interface{}, opts ...interface{}) error {
+		call++
+		switch call {
+		case 1:
+			if r, ok := response.(*[]string); ok {
+				*r = []string{"All"}
+			}
+		case 2:
+			if r, ok := response.(*string); ok {
+				*r = "mycfg.json"
+			}
+		}
+		return nil
+	}
+	opts := &TestOptions{}
+	if err := promptForTestOptions(opts); err != nil {
+		t.Fatalf("prompt failed: %v", err)
+	}
+	if !opts.TestAll {
+		t.Errorf("expected TestAll true")
+	}
+	if opts.Config != "mycfg.json" {
+		t.Errorf("expected config 'mycfg.json', got %s", opts.Config)
+	}
+}
