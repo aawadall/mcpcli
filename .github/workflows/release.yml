@@ -58,7 +58,7 @@ jobs:
         path: dist/
         
     - name: Create Release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@72f2c25
       with:
         files: |
           dist/*.tar.gz
