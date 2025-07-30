@@ -74,8 +74,7 @@ func RunTests(opts *TestOptions, config *core.MCPConfig) error {
 	id := 1
 	if opts.ScriptFile != "" {
 		fmt.Printf("⚠️ Reading and executing script: %s\n", opts.ScriptFile)
-		// TODO: Read and execute script file
-		return nil
+		return fmt.Errorf("script execution is not implemented for file: %s", opts.ScriptFile)
 	}
 
 	if opts.TestAll || opts.TestResources {
