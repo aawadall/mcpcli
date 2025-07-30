@@ -83,14 +83,7 @@ func RunTests(opts *TestOptions, config *core.MCPConfig) error {
 		fmt.Printf("⚠️ Sending request: {\"method\":\"resources/list\",\"id\":%d}\n", id)
 		resp, err := client.ListResources(id)
 		id++
-		if err != nil {
-			fmt.Printf("❌ Failed to list resources: %v\n", err)
-			fmt.Printf("⚠️ Make sure an MCP server is running and connected via stdin/stdout\n")
-		} else if resp.Error != nil {
-			fmt.Printf("❌ MCP error: %s\n", resp.Error.Message)
-		} else {
-			fmt.Printf("✅ Resources: %v\n", resp.Result)
-		}
+		formatAndPrintResult("Resources", resp, err)
 	}
 
 	if opts.TestAll || opts.TestTools {
