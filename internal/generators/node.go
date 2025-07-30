@@ -11,17 +11,20 @@ import (
 	"github.com/fatih/color"
 )
 
-// NodeGenerator implements the Generator interface for Node.js projects
+// NodeGenerator implements the Generator interface for Node.js projects.
 type NodeGenerator struct{}
 
+// NewNodeGenerator creates a new NodeGenerator instance.
 func NewNodeGenerator() *NodeGenerator {
 	return &NodeGenerator{}
 }
 
+// GetLanguage returns the language identifier for the generator.
 func (g *NodeGenerator) GetLanguage() string {
 	return "javascript"
 }
 
+// GetSupportedTransports lists the supported transport mechanisms.
 func (g *NodeGenerator) GetSupportedTransports() []string {
 	return []string{"stdio"}
 }
@@ -38,6 +41,7 @@ func (g *NodeGenerator) Generate(config *core.ProjectConfig) error {
 	return nil
 }
 
+// createDirectoryStructure creates the required directories for the project.
 func (g *NodeGenerator) createDirectoryStructure(output string) error {
 	dirs := []string{
 		"src/handlers",
@@ -55,6 +59,7 @@ func (g *NodeGenerator) createDirectoryStructure(output string) error {
 	return nil
 }
 
+// generateFromTemplates writes all base templates and additional items.
 func (g *NodeGenerator) generateFromTemplates(output string, data *core.TemplateData) error {
 	templates, err := tmp.BaseTemplateMap(g.GetLanguage(), data)
 	if err != nil {
@@ -90,6 +95,7 @@ func (g *NodeGenerator) generateFromTemplates(output string, data *core.Template
 // It uses the specified template and writes the generated files to the given subdirectory
 // within the output directory. Each item's name, as returned by GetName(), is used to
 // determine the filename.
+// generateItems iterates over items and renders a template for each one.
 func generateItems[T interface{ GetName() string }](g *NodeGenerator, output, subDir string, items []T, templatePath string) error {
 	for _, item := range items {
 		// create wrapper struct with the item
@@ -106,7 +112,8 @@ func generateItems[T interface{ GetName() string }](g *NodeGenerator, output, su
 	return nil
 }
 
-// generateTemplate reads a template file, executes it with the provided data, and writes the output to the specified path.
+// generateTemplate renders a single template file with the provided data
+// and writes the output to the specified path.
 func (g *NodeGenerator) generateTemplate(tPath, outPath string, data interface{}) error {
 	content, err := TemplatesFS.ReadFile(tPath)
 	if err != nil {

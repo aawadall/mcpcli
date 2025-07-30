@@ -113,7 +113,7 @@ A generated Node.js MCP server project includes:
 ## Testing
 
 Run `go test ./... -cover` to execute the unit tests. Overall coverage should remain above 85%.
-Recent additions include tests for `internal/commands/test.go` to ensure the CLI testing workflow behaves as expected.
+Recent additions include tests for `internal/commands/test.go` and error handling cases in `internal/generators/node_test.go` to ensure the CLI testing workflow behaves as expected.
 See [the testing guide](doc/testing.md) for more details on running the tests for **mcpcli v0.4.1 (latest)**.
 All contributions must maintain this minimum coverage level.
 
