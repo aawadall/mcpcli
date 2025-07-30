@@ -9,6 +9,7 @@ import (
 
 	survey "github.com/AlecAivazis/survey/v2"
 	"github.com/aawadall/mcpcli/internal/core"
+	"github.com/aawadall/mcpcli/internal/handlers"
 )
 
 func writeTempConfig(t *testing.T, dir string) string {
@@ -55,7 +56,7 @@ func TestLoadMCPConfig_InvalidJSON(t *testing.T) {
 	bad := filepath.Join(tmpDir, "bad.json")
 	os.WriteFile(bad, []byte("{invalid}"), 0644)
 
-	_, err := loadMCPConfig(bad)
+	_, err := handlers.LoadMCPConfig(bad)
 	if err == nil {
 		t.Fatal("expected error for invalid json")
 	}
@@ -67,13 +68,13 @@ func TestLoadMCPConfig_InvalidJSON(t *testing.T) {
 func TestNeedsTestInteractiveMode(t *testing.T) {
 	cases := []struct {
 		name string
-		opts TestOptions
+		opts handlers.TestOptions
 		want bool
 	}{
-		{"none", TestOptions{}, true},
-		{"all", TestOptions{TestAll: true}, false},
-		{"script", TestOptions{ScriptFile: "file"}, false},
-		{"config", TestOptions{Config: "cfg"}, false},
+		{"none", handlers.TestOptions{}, true},
+		{"all", handlers.TestOptions{TestAll: true}, false},
+		{"script", handlers.TestOptions{ScriptFile: "file"}, false},
+		{"config", handlers.TestOptions{Config: "cfg"}, false},
 	}
 	for _, c := range cases {
 		if got := needsTestInteractiveMode(&c.opts); got != c.want {
@@ -93,7 +94,7 @@ func TestLoadMCPConfig_Valid(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	got, err := loadMCPConfig(direct)
+	got, err := handlers.LoadMCPConfig(direct)
 	if err != nil {
 		t.Fatalf("load direct: %v", err)
 	}
@@ -110,7 +111,7 @@ func TestLoadMCPConfig_Valid(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	got, err = loadMCPConfig(proj)
+	got, err = handlers.LoadMCPConfig(proj)
 	if err != nil {
 		t.Fatalf("load project: %v", err)
 	}
@@ -120,7 +121,7 @@ func TestLoadMCPConfig_Valid(t *testing.T) {
 }
 
 func TestLoadMCPConfig_FileNotFound(t *testing.T) {
-	_, err := loadMCPConfig("no-such-file.json")
+	_, err := handlers.LoadMCPConfig("no-such-file.json")
 	if err == nil {
 		t.Fatal("expected error for missing file")
 	}
@@ -156,7 +157,7 @@ func TestPromptForTestOptions_SelectAll(t *testing.T) {
 		}
 		return nil
 	}
-	opts := &TestOptions{}
+	opts := &handlers.TestOptions{}
 	if err := promptForTestOptions(opts); err != nil {
 		t.Fatalf("prompt failed: %v", err)
 	}

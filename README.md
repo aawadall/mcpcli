@@ -89,7 +89,7 @@ Or use interactive mode (if no flags are provided):
 ## Project Structure
 
 - `cmd/`         Entrypoint for the CLI
-- `internal/`    Core logic, generators, templates
+- `internal/`    Core logic, generators, handlers, templates
 - `pkg/`         Shared packages
 
 ## Generated Project Example
