@@ -3,6 +3,7 @@ package generators
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/aawadall/mcpcli/internal/core"
@@ -116,4 +117,61 @@ func TestTemplateDataStructure(t *testing.T) {
 	assert.Equal(t, "hammer", toolData.Item.GetName())
 	assert.Equal(t, "database", resourceData.Item.GetName())
 	assert.Equal(t, "read", capabilityData.Item.GetName())
+}
+
+func TestCreateDirectoryStructure_Error(t *testing.T) {
+	tmpDir := t.TempDir()
+	// create a file where a directory should be
+	f := filepath.Join(tmpDir, "src")
+	if err := os.WriteFile(f, []byte("not a dir"), 0644); err != nil {
+		t.Fatalf("setup failed: %v", err)
+	}
+	g := NewNodeGenerator()
+	if err := g.createDirectoryStructure(tmpDir); err == nil {
+		t.Fatal("expected error when creating directories over existing file")
+	}
+}
+
+func TestGenerateTemplate_ReadError(t *testing.T) {
+	g := NewNodeGenerator()
+	tmpDir := t.TempDir()
+	err := g.generateTemplate("missing.tmpl", filepath.Join(tmpDir, "out.js"), nil)
+	if err == nil || !strings.Contains(err.Error(), "failed to read template") {
+		t.Fatalf("expected template read error, got %v", err)
+	}
+}
+
+func TestGenerateTemplate_CreateError(t *testing.T) {
+	g := NewNodeGenerator()
+	tmpDir := t.TempDir()
+	tPath := "templates/node/stdio/package.json.tmpl"
+	outPath := filepath.Join(tmpDir, "nope", "file.js")
+	err := g.generateTemplate(tPath, outPath, nil)
+	if err == nil || !strings.Contains(err.Error(), "failed to create file") {
+		t.Fatalf("expected file creation error, got %v", err)
+	}
+}
+
+func TestGenerateItems_Error(t *testing.T) {
+	g := NewNodeGenerator()
+	tmpDir := t.TempDir()
+	items := []mockTool{{Name: "bad"}}
+	err := generateItems(g, tmpDir, "src/tools", items, "missing.tmpl")
+	if err == nil || !strings.Contains(err.Error(), "failed to read template") {
+		t.Fatalf("expected template read error, got %v", err)
+	}
+}
+
+func TestNodeGenerator_Generate_DirectoryError(t *testing.T) {
+	tmpDir := t.TempDir()
+	// create a file at path src to trigger directory creation failure
+	if err := os.WriteFile(filepath.Join(tmpDir, "src"), []byte("file"), 0644); err != nil {
+		t.Fatalf("setup failed: %v", err)
+	}
+	cfg := &core.ProjectConfig{Name: "badnode", Language: "javascript", Transport: "stdio", Output: tmpDir}
+	g := NewNodeGenerator()
+	err := g.Generate(cfg)
+	if err == nil || !strings.Contains(err.Error(), "failed to create directory structure") {
+		t.Fatalf("expected directory structure error, got %v", err)
+	}
 }
