@@ -15,7 +15,7 @@ import (
 func writeTempConfig(t *testing.T, dir string) string {
 	cfg := &core.MCPConfig{
 		Name:      "test",
-		Version:   "0.4.1",
+		Version:   "0.4.2",
 		Transport: core.Transport{Type: "stdio"},
 	}
 	data, err := json.Marshal(cfg)
@@ -87,7 +87,7 @@ func TestLoadMCPConfig_Valid(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	// Direct MCPConfig
-	cfg := &core.MCPConfig{Name: "direct", Version: "0.4.1"}
+	cfg := &core.MCPConfig{Name: "direct", Version: "0.4.2"}
 	data, _ := json.Marshal(cfg)
 	direct := filepath.Join(tmpDir, "direct.json")
 	if err := os.WriteFile(direct, data, 0644); err != nil {
