@@ -57,3 +57,11 @@ func TestGlobalFlags(t *testing.T) {
 		t.Error("expected global flag 'quiet' to be defined")
 	}
 }
+
+func TestRootCommand_ExecuteUnknown(t *testing.T) {
+	rootCmd := MakeRootCommand(version)
+	rootCmd.SetArgs([]string{"unknown"})
+	if err := rootCmd.Execute(); err != nil {
+		t.Fatalf("unexpected execute error: %v", err)
+	}
+}

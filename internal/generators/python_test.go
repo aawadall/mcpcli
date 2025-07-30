@@ -3,6 +3,7 @@ package generators
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/aawadall/mcpcli/internal/core"
@@ -83,5 +84,86 @@ func TestPythonGenerator_GenerateWithExtras(t *testing.T) {
 		if _, err := os.Stat(f); err != nil {
 			t.Errorf("expected file %s to exist, got %v", f, err)
 		}
+	}
+}
+
+func TestPythonCreateDirectoryStructure_Error(t *testing.T) {
+	tmpDir := t.TempDir()
+	// create a file where a directory is expected
+	if err := os.WriteFile(filepath.Join(tmpDir, "src"), []byte("file"), 0644); err != nil {
+		t.Fatalf("setup failed: %v", err)
+	}
+	g := NewPythonGenerator()
+	if err := g.createDirectoryStructure(tmpDir); err == nil {
+		t.Fatal("expected error when creating directories over existing file")
+	}
+}
+
+func TestPythonGenerateTemplate_ReadError(t *testing.T) {
+	g := NewPythonGenerator()
+	tmpDir := t.TempDir()
+	err := g.generateTemplate("missing.tmpl", filepath.Join(tmpDir, "out.py"), nil)
+	if err == nil || !strings.Contains(err.Error(), "failed to read template") {
+		t.Fatalf("expected template read error, got %v", err)
+	}
+}
+
+func TestPythonGenerateTemplate_CreateError(t *testing.T) {
+	g := NewPythonGenerator()
+	tmpDir := t.TempDir()
+	tPath := "templates/python/stdio/src/main.py.tmpl"
+	outPath := filepath.Join(tmpDir, "nope", "file.py")
+	err := g.generateTemplate(tPath, outPath, nil)
+	if err == nil || !strings.Contains(err.Error(), "failed to create file") {
+		t.Fatalf("expected file creation error, got %v", err)
+	}
+}
+
+func TestPythonGenerateEntities_Error(t *testing.T) {
+	g := NewPythonGenerator()
+	tmpDir := t.TempDir()
+	items := []core.Tool{{Name: "bad"}}
+	conv := func(t core.Tool) (string, interface{}) { return t.Name, struct{ Tool core.Tool }{t} }
+	err := generateEntities(g, tmpDir, "src/tools", "missing.tmpl", items, conv)
+	if err == nil || !strings.Contains(err.Error(), "failed to read template") {
+		t.Fatalf("expected template read error, got %v", err)
+	}
+}
+
+func TestPythonGenerateTemplateMap_Error(t *testing.T) {
+	g := NewPythonGenerator()
+	tmpDir := t.TempDir()
+	templates := map[string]string{"missing.tmpl": "out.py"}
+	err := g.generateTemplateMap(tmpDir, templates, nil)
+	if err == nil || !strings.Contains(err.Error(), "failed to read template") {
+		t.Fatalf("expected template map error, got %v", err)
+	}
+}
+
+func TestPythonGenerateFromTemplates_Error(t *testing.T) {
+	g := NewPythonGenerator()
+	tmpDir := t.TempDir()
+	// create a file "src" to block directory creation
+	if err := os.WriteFile(filepath.Join(tmpDir, "src"), []byte("file"), 0644); err != nil {
+		t.Fatalf("setup failed: %v", err)
+	}
+	cfg := &core.ProjectConfig{Name: "bad", Language: "python", Transport: "stdio", Output: tmpDir}
+	data := cfg.GetTemplateData()
+	err := g.generateFromTemplates(tmpDir, data)
+	if err == nil || !strings.Contains(err.Error(), "failed to create file") {
+		t.Fatalf("expected file creation error, got %v", err)
+	}
+}
+
+func TestPythonGenerator_Generate_DirectoryError(t *testing.T) {
+	tmpDir := t.TempDir()
+	if err := os.WriteFile(filepath.Join(tmpDir, "src"), []byte("file"), 0644); err != nil {
+		t.Fatalf("setup failed: %v", err)
+	}
+	cfg := &core.ProjectConfig{Name: "badpython", Language: "python", Transport: "stdio", Output: tmpDir}
+	g := NewPythonGenerator()
+	err := g.Generate(cfg)
+	if err == nil || !strings.Contains(err.Error(), "failed to create directory structure") {
+		t.Fatalf("expected directory structure error, got %v", err)
 	}
 }
