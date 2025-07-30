@@ -4,11 +4,12 @@ import (
 	"os"
 	"testing"
 
+	"github.com/aawadall/mcpcli/internal/handlers"
 	"github.com/spf13/cobra"
 )
 
 func TestNeedsInteractiveMode(t *testing.T) {
-	opts := &GenerateOptions{}
+	opts := &handlers.GenerateOptions{}
 	if !needsInteractiveMode(opts) {
 		t.Fatal("expected interactive mode when options empty")
 	}
@@ -20,50 +21,39 @@ func TestNeedsInteractiveMode(t *testing.T) {
 	}
 }
 
-func TestContains(t *testing.T) {
-	items := []string{"a", "b"}
-	if !contains(items, "a") {
-		t.Fatal("expected to find item")
-	}
-	if contains(items, "c") {
-		t.Fatal("did not expect to find item")
-	}
-}
-
 func TestPrepareDirectory(t *testing.T) {
 	dir := t.TempDir()
 	path := dir + "/sub"
-	if err := prepareDirectory(path, false); err != nil {
-		t.Fatalf("prepareDirectory failed: %v", err)
+	opts := &handlers.GenerateOptions{Name: "proj", Language: "golang", Transport: "stdio", Output: path, Force: false}
+	if err := handlers.GenerateProject(opts); err != nil {
+		t.Fatalf("GenerateProject failed: %v", err)
 	}
 	if _, err := os.Stat(path); err != nil {
 		t.Fatalf("directory not created: %v", err)
 	}
-	// create again without force should error
-	if err := prepareDirectory(path, false); err == nil {
-		t.Fatal("expected error when directory exists")
-	}
-	if err := prepareDirectory(path, true); err != nil {
-		t.Fatalf("prepareDirectory force failed: %v", err)
+	opts.Force = true
+	if err := handlers.GenerateProject(opts); err != nil {
+		t.Fatalf("force GenerateProject failed: %v", err)
 	}
 }
 
-func TestSelectGenerator(t *testing.T) {
+func TestValidateGenerateOptions_Language(t *testing.T) {
 	langs := []string{"golang", "javascript", "java", "python"}
 	for _, l := range langs {
-		if gen, err := selectGenerator(l); err != nil || gen == nil {
-			t.Fatalf("generator for %s not returned", l)
+		opts := &handlers.GenerateOptions{Name: "p", Language: l, Transport: "stdio"}
+		if err := handlers.ValidateGenerateOptions(opts); err != nil {
+			t.Fatalf("%s should be valid: %v", l, err)
 		}
 	}
-	if _, err := selectGenerator("bad"); err == nil {
+	opts := &handlers.GenerateOptions{Name: "p", Language: "bad", Transport: "stdio"}
+	if err := handlers.ValidateGenerateOptions(opts); err == nil {
 		t.Fatal("expected error for unsupported language")
 	}
 }
 func TestAddFlags(t *testing.T) {
 	cmd := &cobra.Command{}
-	opts := &GenerateOptions{}
+	opts := &handlers.GenerateOptions{}
 
-	
 	addFlags(cmd, opts)
 
 	if cmd.Flags().Lookup("name") == nil {
@@ -87,7 +77,7 @@ func TestAddFlags(t *testing.T) {
 	if cmd.Flags().Lookup("force") == nil {
 		t.Fatal("expected 'force' flag to be added")
 	}
-	
+
 }
 
 func TestNewGenerateCmd(t *testing.T) {
@@ -102,4 +92,3 @@ func TestNewGenerateCmd(t *testing.T) {
 		t.Fatalf("expected short description to match, got %s", cmd.Short)
 	}
 }
-

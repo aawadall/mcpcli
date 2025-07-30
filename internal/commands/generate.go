@@ -2,76 +2,48 @@ package commands
 
 import (
 	"fmt"
-	"os"
-	"path/filepath"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/aawadall/mcpcli/internal/core"
-	"github.com/aawadall/mcpcli/internal/generators"
+	"github.com/aawadall/mcpcli/internal/handlers"
 	"github.com/spf13/cobra"
 )
-
-// GenerateOptions holds all configurable parameters for the generate command.
-// When running in interactive mode, unanswered fields will be prompted.
-type GenerateOptions struct {
-	Name         string
-	Language     string
-	Transport    string
-	Docker       bool
-	Examples     bool
-	Output       string
-	Interactive  bool
-	Force        bool
-	Tools        []core.Tool
-	Resources    []core.Resource
-	Capabilities []core.Capability
-}
 
 // NewGenerateCmd creates the `generate` cobra command used to scaffold new MCP
 // server projects. It sets up flags, validation, and interactive prompts.
 func NewGenerateCmd() *cobra.Command {
-	opts := &GenerateOptions{}
+	opts := &handlers.GenerateOptions{}
 
 	cmd := &cobra.Command{
 		Use:     "generate [name]",
 		Aliases: []string{"gen", "g"},
 		Short:   "Generate a new MCP server project",
 		Long: `Generate scaffolds a new MCP server project with the specified configuration.
-		Supports multiple languages, transport methods, and includes optional Docker support.`,
+Supports multiple languages, transport methods, and includes optional Docker support.`,
 		Args: cobra.MaximumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// If name provided as argument
 			if len(args) > 0 {
 				opts.Name = args[0]
 			}
-
-			// Check if we need interactive mode
 			opts.Interactive = needsInteractiveMode(opts)
-
 			if opts.Interactive {
 				if err := promptForOptions(opts); err != nil {
 					return fmt.Errorf("interactive prompt failed: %w", err)
 				}
 			}
-
-			// Validate options
-			if err := validateOptions(opts); err != nil {
+			if err := handlers.ValidateGenerateOptions(opts); err != nil {
 				return fmt.Errorf("validation failed: %w", err)
 			}
-
-			// Generate the project
-			return generateProject(opts)
+			return handlers.GenerateProject(opts)
 		},
 	}
 
-	// Add flags
 	addFlags(cmd, opts)
-
 	return cmd
 }
 
 // Add flags to the generate command.
-func addFlags(cmd *cobra.Command, opts *GenerateOptions) {
+func addFlags(cmd *cobra.Command, opts *handlers.GenerateOptions) {
 	cmd.Flags().StringVarP(&opts.Name, "name", "n", "", "MCP project name")
 	cmd.Flags().StringVarP(&opts.Language, "language", "l", "", "Programming language (e.g., golang, python, java)")
 	cmd.Flags().StringVarP(&opts.Transport, "transport", "t", "", "Transport method (e.g., stdio, rest, websocket)")
@@ -82,12 +54,12 @@ func addFlags(cmd *cobra.Command, opts *GenerateOptions) {
 }
 
 // needsInteractiveMode checks if the options are incomplete and requires user input.
-func needsInteractiveMode(opts *GenerateOptions) bool {
+func needsInteractiveMode(opts *handlers.GenerateOptions) bool {
 	return opts.Name == "" || opts.Language == "" || opts.Transport == ""
 }
 
 // promptForOptions prompts the user for missing options interactively.
-func promptForOptions(opts *GenerateOptions) error {
+func promptForOptions(opts *handlers.GenerateOptions) error {
 	if err := askBasicOptions(opts); err != nil {
 		return err
 	}
@@ -100,9 +72,17 @@ func promptForOptions(opts *GenerateOptions) error {
 	return promptForCapabilities(opts)
 }
 
+type basicAnswers struct {
+	Name      string
+	Language  string
+	Transport string
+	Docker    bool
+	Examples  bool
+	Output    string
+}
+
 // askBasicOptions collects core project options interactively.
-// It updates the provided GenerateOptions with any answers.
-func askBasicOptions(opts *GenerateOptions) error {
+func askBasicOptions(opts *handlers.GenerateOptions) error {
 	questions := buildBasicQuestions(opts)
 	ans := basicAnswers{}
 	if len(questions) > 0 {
@@ -114,17 +94,8 @@ func askBasicOptions(opts *GenerateOptions) error {
 	return nil
 }
 
-type basicAnswers struct {
-	Name      string
-	Language  string
-	Transport string
-	Docker    bool
-	Examples  bool
-	Output    string
-}
-
 // buildBasicQuestions returns survey questions for unset basic options.
-func buildBasicQuestions(opts *GenerateOptions) []*survey.Question {
+func buildBasicQuestions(opts *handlers.GenerateOptions) []*survey.Question {
 	qs := []*survey.Question{}
 	if opts.Name == "" {
 		qs = append(qs, &survey.Question{Name: "name", Prompt: &survey.Input{Message: "Project name:", Default: "my-mcp-server"}, Validate: survey.Required})
@@ -148,7 +119,7 @@ func buildBasicQuestions(opts *GenerateOptions) []*survey.Question {
 }
 
 // applyBasicAnswers applies the survey answers back to the options struct.
-func applyBasicAnswers(opts *GenerateOptions, ans basicAnswers) {
+func applyBasicAnswers(opts *handlers.GenerateOptions, ans basicAnswers) {
 	if opts.Name == "" {
 		opts.Name = ans.Name
 	}
@@ -170,7 +141,7 @@ func applyBasicAnswers(opts *GenerateOptions, ans basicAnswers) {
 }
 
 // promptForTools interactively adds tool definitions to the options.
-func promptForTools(opts *GenerateOptions) error {
+func promptForTools(opts *handlers.GenerateOptions) error {
 	var add bool
 	survey.AskOne(&survey.Confirm{Message: "Would you like to add tools?", Default: false}, &add)
 	for add {
@@ -186,7 +157,7 @@ func promptForTools(opts *GenerateOptions) error {
 }
 
 // promptForResources interactively adds resource definitions to the options.
-func promptForResources(opts *GenerateOptions) error {
+func promptForResources(opts *handlers.GenerateOptions) error {
 	var add bool
 	survey.AskOne(&survey.Confirm{Message: "Would you like to add resources?", Default: false}, &add)
 	for add {
@@ -212,7 +183,7 @@ func promptForResources(opts *GenerateOptions) error {
 }
 
 // promptForCapabilities interactively adds capability definitions to the options.
-func promptForCapabilities(opts *GenerateOptions) error {
+func promptForCapabilities(opts *handlers.GenerateOptions) error {
 	var add bool
 	survey.AskOne(&survey.Confirm{Message: "Would you like to add capabilities?", Default: false}, &add)
 	for add {
@@ -232,128 +203,4 @@ func promptForCapabilities(opts *GenerateOptions) error {
 		survey.AskOne(&survey.Confirm{Message: "Add another capability?", Default: false}, &add)
 	}
 	return nil
-}
-
-// validateOptions checks if the provided options are valid.
-func validateOptions(opts *GenerateOptions) error {
-	// validate name
-	if opts.Name == "" {
-		return fmt.Errorf("project name is required")
-	}
-
-	// validate language
-	validLanguages := []string{"golang", "javascript", "java", "python"}
-	if !contains(validLanguages, opts.Language) {
-		return fmt.Errorf("invalid language: %s, valid options are: %v", opts.Language, validLanguages)
-	}
-
-	// validate transport
-	validTransports := []string{"stdio"} // Add other valid transports as needed
-	if !contains(validTransports, opts.Transport) {
-		return fmt.Errorf("invalid transport: %s, valid options are: %v", opts.Transport, validTransports)
-	}
-
-	// Set default output directory if not provided
-	if opts.Output == "" {
-		opts.Output = opts.Name
-	}
-
-	return nil
-}
-
-func contains(slice []string, item string) bool {
-	for _, s := range slice {
-		if s == item {
-			return true
-		}
-	}
-	return false
-}
-
-// generateProject creates the project structure based on the provided options.
-func generateProject(opts *GenerateOptions) error {
-	config := &core.ProjectConfig{
-		Name:         opts.Name,
-		Language:     opts.Language,
-		Transport:    opts.Transport,
-		Docker:       opts.Docker,
-		Examples:     opts.Examples,
-		Output:       opts.Output,
-		Tools:        opts.Tools,
-		Resources:    opts.Resources,
-		Capabilities: opts.Capabilities,
-	}
-
-	if err := prepareDirectory(opts.Output, opts.Force); err != nil {
-		return err
-	}
-
-	generator, err := selectGenerator(opts.Language)
-	if err != nil {
-		return err
-	}
-	if err := generator.Generate(config); err != nil {
-		os.RemoveAll(opts.Output)
-		return fmt.Errorf("failed to generate project: %w", err)
-	}
-
-	printNextSteps(opts)
-	return nil
-}
-
-// prepareDirectory creates the output directory, removing it first when force is true.
-func prepareDirectory(path string, force bool) error {
-	if stat, err := os.Stat(path); err == nil {
-		if force {
-			if err := os.RemoveAll(path); err != nil {
-				return fmt.Errorf("failed to remove existing directory: %w", err)
-			}
-		} else if stat != nil {
-			return fmt.Errorf("output directory %s already exists, use --force to overwrite", path)
-		}
-	} else if !os.IsNotExist(err) {
-		return fmt.Errorf("failed to check output directory: %w", err)
-	}
-	if err := os.MkdirAll(path, 0755); err != nil {
-		return fmt.Errorf("failed to create output directory: %w", err)
-	}
-	return nil
-}
-
-// selectGenerator returns a project generator based on the chosen language.
-func selectGenerator(lang string) (generators.Generator, error) {
-	switch lang {
-	case "golang":
-		return generators.NewGolangGenerator(), nil
-	case "javascript":
-		return generators.NewNodeGenerator(), nil
-	case "java":
-		return generators.NewJavaGenerator(), nil
-	case "python":
-		return generators.NewPythonGenerator(), nil
-	}
-	return nil, fmt.Errorf("language %s is not supported yet", lang)
-}
-
-// printNextSteps outputs instructions for running the generated project.
-func printNextSteps(opts *GenerateOptions) {
-	fmt.Printf("✅ Successfully generated MCP server project: %s\n", opts.Name)
-	path, _ := filepath.Abs(opts.Output)
-	fmt.Printf("📁 Location: %s\n", path)
-	fmt.Printf("🚀 Next steps:\n")
-	fmt.Printf("   cd %s\n", opts.Output)
-
-	switch opts.Language {
-	case "go", "golang":
-		fmt.Printf("   go mod tidy\n")
-		fmt.Printf("   go run cmd/%s/main.go\n", opts.Transport)
-	case "javascript":
-		fmt.Printf("   npm install\n")
-		fmt.Printf("   node src/index.js\n")
-	case "java":
-		fmt.Printf("   mvn package\n")
-		fmt.Printf("   java -jar target/%s-1.0.0.jar\n", opts.Name)
-	case "python":
-		fmt.Printf("   python src/main.py\n")
-	}
 }
