@@ -76,3 +76,34 @@ func TestPrintNextSteps(t *testing.T) {
 		t.Fatalf("output missing next steps")
 	}
 }
+
+func captureGenOutput(f func()) string {
+	r, w, _ := os.Pipe()
+	stdout := os.Stdout
+	os.Stdout = w
+	defer func() { os.Stdout = stdout }()
+	f()
+	w.Close()
+	var buf bytes.Buffer
+	io.Copy(&buf, r)
+	return buf.String()
+}
+
+func TestPrintNextSteps_OtherLanguages(t *testing.T) {
+	cases := []struct {
+		lang   string
+		expect string
+	}{
+		{"javascript", "npm install"},
+		{"java", "mvn package"},
+		{"python", "python src/main.py"},
+	}
+	for _, c := range cases {
+		out := captureGenOutput(func() {
+			printNextSteps(&GenerateOptions{Name: "p", Language: c.lang, Output: "out"})
+		})
+		if !strings.Contains(out, c.expect) {
+			t.Fatalf("expected %s instructions", c.lang)
+		}
+	}
+}

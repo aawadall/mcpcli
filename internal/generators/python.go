@@ -121,7 +121,9 @@ func (g *PythonGenerator) generateTemplateMap(output string, templates map[strin
 	return nil
 }
 
-// generateEntities renders a template for each provided item.
+// generateEntities iterates over the given items, converts each to template data
+// using conv, and writes the resulting file to the specified directory.
+// The file is named after the item with a .py extension.
 func generateEntities[T any](g *PythonGenerator, output, dir, tmpl string, items []T, conv func(T) (string, interface{})) error {
 	for _, item := range items {
 		name, d := conv(item)
