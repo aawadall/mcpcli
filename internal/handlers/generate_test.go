@@ -10,11 +10,14 @@ import (
 )
 
 func TestValidateGenerateOptions(t *testing.T) {
-	opts := &GenerateOptions{Name: "proj", Language: "golang", Transport: "stdio"}
-	if err := ValidateGenerateOptions(opts); err != nil {
-		t.Fatalf("unexpected error: %v", err)
+	transports := []string{"stdio", "rest", "websocket"}
+	for _, tr := range transports {
+		opts := &GenerateOptions{Name: "proj", Language: "golang", Transport: tr}
+		if err := ValidateGenerateOptions(opts); err != nil {
+			t.Fatalf("%s should be valid: %v", tr, err)
+		}
 	}
-	opts.Language = "unknown"
+	opts := &GenerateOptions{Name: "proj", Language: "unknown", Transport: "stdio"}
 	if err := ValidateGenerateOptions(opts); err == nil {
 		t.Fatal("expected error for invalid language")
 	}

@@ -11,6 +11,16 @@ func TestValidateOptions(t *testing.T) {
 		t.Fatalf("valid options returned error: %v", err)
 	}
 
+	opts.Transport = "rest"
+	if err := handlers.ValidateGenerateOptions(opts); err != nil {
+		t.Fatalf("rest should be valid: %v", err)
+	}
+
+	opts.Transport = "websocket"
+	if err := handlers.ValidateGenerateOptions(opts); err != nil {
+		t.Fatalf("websocket should be valid: %v", err)
+	}
+
 	opts.Language = "invalid"
 	if err := handlers.ValidateGenerateOptions(opts); err == nil {
 		t.Fatal("expected error for invalid language")

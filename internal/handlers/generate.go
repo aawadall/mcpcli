@@ -34,7 +34,7 @@ func ValidateGenerateOptions(opts *GenerateOptions) error {
 	if !contains(validLanguages, opts.Language) {
 		return fmt.Errorf("invalid language: %s, valid options are: %v", opts.Language, validLanguages)
 	}
-	validTransports := []string{"stdio"}
+	validTransports := []string{"stdio", "rest", "websocket"}
 	if !contains(validTransports, opts.Transport) {
 		return fmt.Errorf("invalid transport: %s, valid options are: %v", opts.Transport, validTransports)
 	}
