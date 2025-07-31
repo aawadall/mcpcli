@@ -1,0 +1,45 @@
+package {{.PackageName}};
+
+import java.net.InetSocketAddress;
+import org.java_websocket.server.WebSocketServer;
+import org.java_websocket.WebSocket;
+import org.java_websocket.handshake.ClientHandshake;
+import org.json.JSONObject;
+import {{.PackageName}}.handlers.MCPHandler;
+
+public class Main extends WebSocketServer {
+    public Main() {
+        super(new InetSocketAddress(8081));
+    }
+
+    @Override
+    public void onOpen(WebSocket conn, ClientHandshake handshake) {}
+
+    @Override
+    public void onClose(WebSocket conn, int code, String reason, boolean remote) {}
+
+    @Override
+    public void onMessage(WebSocket conn, String message) {
+        try {
+            JSONObject req = new JSONObject(message);
+            JSONObject res = MCPHandler.handleRequest(req);
+            conn.send(res.toString());
+        } catch (Exception e) {
+            System.err.println("Error processing message: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void onError(WebSocket conn, Exception ex) {
+        System.err.println("WebSocket error: " + ex.getMessage());
+    }
+
+    @Override
+    public void onStart() {
+        System.err.println("Starting {{.Config.Name}} MCP Server (websocket mode)...");
+    }
+
+    public static void main(String[] args) {
+        new Main().start();
+    }
+}

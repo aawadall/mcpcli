@@ -10,5 +10,6 @@
     "start": "node src/index.js",
     "test": "echo \"No test specified\" && exit 1",
     "build": "echo \"No build step defined\" && exit 1"
-  }
+  },
+  "dependencies": { {{if eq .Config.Transport "websocket"}}"ws": "^8.13.0"{{end}} }
 }

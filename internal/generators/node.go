@@ -26,7 +26,7 @@ func (g *NodeGenerator) GetLanguage() string {
 
 // GetSupportedTransports lists the supported transport mechanisms.
 func (g *NodeGenerator) GetSupportedTransports() []string {
-	return []string{"stdio"}
+	return []string{"stdio", "rest", "websocket"}
 }
 
 // Generate scaffolds a Node.js project using the provided configuration.

@@ -15,9 +15,9 @@ func TestGenerators(t *testing.T) {
 		transports []string
 	}{
 		{"go", NewGolangGenerator(), "go", []string{"stdio", "rest", "websocket"}},
-		{"java", NewJavaGenerator(), "java", []string{"stdio"}},
-		{"javascript", NewNodeGenerator(), "javascript", []string{"stdio"}},
-		{"python", NewPythonGenerator(), "python", []string{"stdio"}},
+		{"java", NewJavaGenerator(), "java", []string{"stdio", "rest", "websocket"}},
+		{"javascript", NewNodeGenerator(), "javascript", []string{"stdio", "rest", "websocket"}},
+		{"python", NewPythonGenerator(), "python", []string{"stdio", "rest", "websocket"}},
 	}
 
 	for _, tt := range tests {

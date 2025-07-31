@@ -1,0 +1,38 @@
+package {{.PackageName}};
+
+import com.sun.net.httpserver.HttpServer;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpExchange;
+import java.io.*;
+import java.net.InetSocketAddress;
+import org.json.JSONObject;
+import {{.PackageName}}.handlers.MCPHandler;
+
+public class Main {
+    public static void main(String[] args) throws Exception {
+        System.err.println("Starting {{.Config.Name}} MCP Server (http mode)...");
+        HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
+        server.createContext("/mcp", new HttpHandler() {
+            public void handle(HttpExchange ex) throws IOException {
+                if (!"POST".equals(ex.getRequestMethod())) {
+                    ex.sendResponseHeaders(405, -1);
+                    return;
+                }
+                String body = new String(ex.getRequestBody().readAllBytes());
+                try {
+                    JSONObject req = new JSONObject(body);
+                    JSONObject res = MCPHandler.handleRequest(req);
+                    byte[] resp = res.toString().getBytes();
+                    ex.getResponseHeaders().add("Content-Type", "application/json");
+                    ex.sendResponseHeaders(200, resp.length);
+                    ex.getResponseBody().write(resp);
+                } catch (Exception e) {
+                    ex.sendResponseHeaders(400, -1);
+                } finally {
+                    ex.close();
+                }
+            }
+        });
+        server.start();
+    }
+}

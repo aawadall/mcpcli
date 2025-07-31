@@ -1,0 +1,58 @@
+package main
+
+import (
+    "encoding/json"
+    "fmt"
+    "log"
+    "net/http"
+    "os"
+
+    "github.com/gorilla/websocket"
+    "{{.ModuleName}}/internal/handlers"
+    "{{.ModuleName}}/pkg/mcp"
+)
+
+var upgrader = websocket.Upgrader{}
+
+func main() {
+    fmt.Fprintf(os.Stderr, "Starting {{.Config.Name}} MCP Server (websocket mode)...\n")
+
+    server := mcp.NewServer()
+    handler := handlers.NewHandler()
+
+    // Register handlers
+    server.RegisterResourceHandler(handler.HandleListResources)
+    server.RegisterResourceReadHandler(handler.HandleReadResource)
+    server.RegisterToolHandler(handler.HandleListTools)
+    server.RegisterCallToolHandler(handler.HandleCallTool)
+
+    http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+        conn, err := upgrader.Upgrade(w, r, nil)
+        if err != nil {
+            log.Printf("upgrade error: %v", err)
+            return
+        }
+        defer conn.Close()
+        for {
+            _, msg, err := conn.ReadMessage()
+            if err != nil {
+                log.Printf("read error: %v", err)
+                break
+            }
+            var req mcp.Request
+            if err := json.Unmarshal(msg, &req); err != nil {
+                log.Printf("json error: %v", err)
+                continue
+            }
+            res := server.HandleRequest(req)
+            resBytes, err := json.Marshal(res)
+            if err != nil {
+                log.Printf("json error: %v", err)
+                continue
+            }
+            conn.WriteMessage(websocket.TextMessage, resBytes)
+        }
+    })
+
+    log.Fatal(http.ListenAndServe(":8081", nil))
+}
