@@ -1,0 +1,40 @@
+package main
+
+import (
+    "encoding/json"
+    "fmt"
+    "log"
+    "net/http"
+    "os"
+
+    "github.com/gorilla/mux"
+    "{{.ModuleName}}/internal/handlers"
+    "{{.ModuleName}}/pkg/mcp"
+)
+
+func main() {
+    fmt.Fprintf(os.Stderr, "Starting {{.Config.Name}} MCP Server (http mode)...\n")
+
+    server := mcp.NewServer()
+    handler := handlers.NewHandler()
+
+    // Register handlers
+    server.RegisterResourceHandler(handler.HandleListResources)
+    server.RegisterResourceReadHandler(handler.HandleReadResource)
+    server.RegisterToolHandler(handler.HandleListTools)
+    server.RegisterCallToolHandler(handler.HandleCallTool)
+
+    router := mux.NewRouter()
+    router.HandleFunc("/mcp", func(w http.ResponseWriter, r *http.Request) {
+        var req mcp.Request
+        if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+            http.Error(w, err.Error(), http.StatusBadRequest)
+            return
+        }
+        res := server.HandleRequest(req)
+        w.Header().Set("Content-Type", "application/json")
+        json.NewEncoder(w).Encode(res)
+    }).Methods(http.MethodPost)
+
+    log.Fatal(http.ListenAndServe(":8080", router))
+}

@@ -1,0 +1,18 @@
+import { WebSocketServer } from 'ws';
+import { handleRequest } from './handlers/mcp.js';
+
+console.error('Starting {{.Config.Name}} MCP Server (websocket mode)...');
+
+const wss = new WebSocketServer({ port: 8081 });
+
+wss.on('connection', ws => {
+  ws.on('message', message => {
+    try {
+      const reqObj = JSON.parse(message);
+      const res = handleRequest(reqObj);
+      ws.send(JSON.stringify(res));
+    } catch (err) {
+      console.error('Error handling message:', err.message);
+    }
+  });
+});

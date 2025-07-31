@@ -1,0 +1,22 @@
+import asyncio
+import json
+import sys
+import websockets
+from handlers.mcp import handle_request
+
+async def handler(ws):
+    async for message in ws:
+        try:
+            req = json.loads(message)
+            res = handle_request(req)
+            await ws.send(json.dumps(res))
+        except Exception as e:
+            print(f'Error handling message: {e}', file=sys.stderr)
+
+async def main():
+    print(f"Starting {{ .Config.Name }} MCP Server (websocket mode)...", file=sys.stderr)
+    async with websockets.serve(handler, 'localhost', 8081):
+        await asyncio.Future()
+
+if __name__ == '__main__':
+    asyncio.run(main())

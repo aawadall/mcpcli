@@ -5,4 +5,5 @@ go 1.22
 require (
     github.com/gorilla/mux v1.8.0
     {{if eq .Config.Transport "rest"}}github.com/gorilla/handlers v1.5.1{{end}}
+    {{if eq .Config.Transport "websocket"}}github.com/gorilla/websocket v1.5.0{{end}}
 )

@@ -21,7 +21,9 @@ func NewPythonGenerator() *PythonGenerator { return &PythonGenerator{} }
 func (g *PythonGenerator) GetLanguage() string { return "python" }
 
 // GetSupportedTransports lists the transports supported by the generator.
-func (g *PythonGenerator) GetSupportedTransports() []string { return []string{"stdio"} }
+func (g *PythonGenerator) GetSupportedTransports() []string {
+	return []string{"stdio", "rest", "websocket"}
+}
 
 // Generate scaffolds a Python project using the provided configuration.
 func (g *PythonGenerator) Generate(config *core.ProjectConfig) error {
