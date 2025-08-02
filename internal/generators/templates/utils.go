@@ -26,18 +26,22 @@ func BaseTemplateMap(lang string, data *core.TemplateData) (map[string]string, e
 }
 
 func goTemplateMap(data *core.TemplateData) map[string]string {
+	transport := data.Config.Transport
+	if transport == "rest" {
+		transport = "http"
+	}
 	m := map[string]string{
-		"templates/go/stdio/go.mod.tmpl":                                              "go.mod",
-		fmt.Sprintf("templates/go/%s/cmd/server/main.go.tmpl", data.Config.Transport): filepath.Join("cmd", "server", "main.go"),
-		"templates/go/stdio/internal/handlers/mcp.go.tmpl":                            filepath.Join("internal", "handlers", "mcp.go"),
-		"templates/go/stdio/internal/resources/filesystem.go.tmpl":                    filepath.Join("internal", "resources", "filesystem.go"),
-		"templates/go/stdio/internal/resources/registry.go.tmpl":                      filepath.Join("internal", "resources", "registry.go"),
-		"templates/go/stdio/internal/tools/calculator.go.tmpl":                        filepath.Join("internal", "tools", "calculator.go"),
-		"templates/go/stdio/pkg/mcp/client.go.tmpl":                                   filepath.Join("pkg", "mcp", "client.go"),
-		"templates/go/stdio/pkg/mcp/mcp.go.tmpl":                                      filepath.Join("pkg", "mcp", "mcp.go"),
-		"templates/go/stdio/README.md.tmpl":                                           "README.md",
-		"templates/go/stdio/configs/mcp-config.json.tmpl":                             filepath.Join("configs", "mcp-config.json"),
-		"templates/go/stdio/examples/example.go.tmpl":                                 filepath.Join("examples", "example.go"),
+		"templates/go/stdio/go.mod.tmpl":                                  "go.mod",
+		fmt.Sprintf("templates/go/%s/cmd/server/main.go.tmpl", transport): filepath.Join("cmd", "server", "main.go"),
+		"templates/go/stdio/internal/handlers/mcp.go.tmpl":                filepath.Join("internal", "handlers", "mcp.go"),
+		"templates/go/stdio/internal/resources/filesystem.go.tmpl":        filepath.Join("internal", "resources", "filesystem.go"),
+		"templates/go/stdio/internal/resources/registry.go.tmpl":          filepath.Join("internal", "resources", "registry.go"),
+		"templates/go/stdio/internal/tools/calculator.go.tmpl":            filepath.Join("internal", "tools", "calculator.go"),
+		"templates/go/stdio/pkg/mcp/client.go.tmpl":                       filepath.Join("pkg", "mcp", "client.go"),
+		"templates/go/stdio/pkg/mcp/mcp.go.tmpl":                          filepath.Join("pkg", "mcp", "mcp.go"),
+		"templates/go/stdio/README.md.tmpl":                               "README.md",
+		"templates/go/stdio/configs/mcp-config.json.tmpl":                 filepath.Join("configs", "mcp-config.json"),
+		"templates/go/stdio/examples/example.go.tmpl":                     filepath.Join("examples", "example.go"),
 	}
 	if data.Config.Docker {
 		m["templates/go/stdio/Dockerfile.tmpl"] = "Dockerfile"
@@ -47,14 +51,18 @@ func goTemplateMap(data *core.TemplateData) map[string]string {
 }
 
 func nodeTemplateMap(data *core.TemplateData) map[string]string {
+	transport := data.Config.Transport
+	if transport == "rest" {
+		transport = "http"
+	}
 	m := map[string]string{
-		"templates/node/stdio/package.json.tmpl":                                  "package.json",
-		fmt.Sprintf("templates/node/%s/src/index.js.tmpl", data.Config.Transport): filepath.Join("src", "index.js"),
-		"templates/node/stdio/src/handlers/mcp.js.tmpl":                           filepath.Join("src", "handlers", "mcp.js"),
-		"templates/node/stdio/src/resources/registry.js.tmpl":                     filepath.Join("src", "resources", "registry.js"),
-		"templates/node/stdio/README.md.tmpl":                                     "README.md",
-		"templates/node/stdio/configs/mcp-config.json.tmpl":                       filepath.Join("configs", "mcp-config.json"),
-		"templates/node/stdio/examples/example.js.tmpl":                           filepath.Join("examples", "example.js"),
+		"templates/node/stdio/package.json.tmpl":                      "package.json",
+		fmt.Sprintf("templates/node/%s/src/index.js.tmpl", transport): filepath.Join("src", "index.js"),
+		"templates/node/stdio/src/handlers/mcp.js.tmpl":               filepath.Join("src", "handlers", "mcp.js"),
+		"templates/node/stdio/src/resources/registry.js.tmpl":         filepath.Join("src", "resources", "registry.js"),
+		"templates/node/stdio/README.md.tmpl":                         "README.md",
+		"templates/node/stdio/configs/mcp-config.json.tmpl":           filepath.Join("configs", "mcp-config.json"),
+		"templates/node/stdio/examples/example.js.tmpl":               filepath.Join("examples", "example.js"),
 	}
 	if data.Config.Docker {
 		m["templates/node/stdio/Dockerfile.tmpl"] = "Dockerfile"
@@ -64,13 +72,17 @@ func nodeTemplateMap(data *core.TemplateData) map[string]string {
 }
 
 func pythonTemplateMap(data *core.TemplateData) map[string]string {
+	transport := data.Config.Transport
+	if transport == "rest" {
+		transport = "http"
+	}
 	m := map[string]string{
-		fmt.Sprintf("templates/python/%s/src/main.py.tmpl", data.Config.Transport): filepath.Join("src", "main.py"),
-		"templates/python/stdio/src/handlers/mcp.py.tmpl":                          filepath.Join("src", "handlers", "mcp.py"),
-		"templates/python/stdio/src/resources/registry.py.tmpl":                    filepath.Join("src", "resources", "registry.py"),
-		"templates/python/stdio/README.md.tmpl":                                    "README.md",
-		"templates/python/stdio/configs/mcp-config.json.tmpl":                      filepath.Join("configs", "mcp-config.json"),
-		"templates/python/stdio/examples/example.py.tmpl":                          filepath.Join("examples", "example.py"),
+		fmt.Sprintf("templates/python/%s/src/main.py.tmpl", transport): filepath.Join("src", "main.py"),
+		"templates/python/stdio/src/handlers/mcp.py.tmpl":              filepath.Join("src", "handlers", "mcp.py"),
+		"templates/python/stdio/src/resources/registry.py.tmpl":        filepath.Join("src", "resources", "registry.py"),
+		"templates/python/stdio/README.md.tmpl":                        "README.md",
+		"templates/python/stdio/configs/mcp-config.json.tmpl":          filepath.Join("configs", "mcp-config.json"),
+		"templates/python/stdio/examples/example.py.tmpl":              filepath.Join("examples", "example.py"),
 	}
 	if data.Config.Docker {
 		m["templates/python/stdio/Dockerfile.tmpl"] = "Dockerfile"
@@ -81,14 +93,18 @@ func pythonTemplateMap(data *core.TemplateData) map[string]string {
 
 func javaTemplateMap(data *core.TemplateData) map[string]string {
 	pkgPath := filepath.Join(strings.Split(data.PackageName, ".")...)
+	transport := data.Config.Transport
+	if transport == "rest" {
+		transport = "http"
+	}
 	m := map[string]string{
-		"templates/java/stdio/pom.xml.tmpl":                                                  "pom.xml",
-		fmt.Sprintf("templates/java/%s/src/main/java/Main.java.tmpl", data.Config.Transport): filepath.Join("src", "main", "java", pkgPath, "Main.java"),
-		"templates/java/stdio/src/main/java/handlers/MCPHandler.java.tmpl":                   filepath.Join("src", "main", "java", pkgPath, "handlers", "MCPHandler.java"),
-		"templates/java/stdio/src/main/java/resources/Registry.java.tmpl":                    filepath.Join("src", "main", "java", pkgPath, "resources", "Registry.java"),
-		"templates/java/stdio/README.md.tmpl":                                                "README.md",
-		"templates/java/stdio/configs/mcp-config.json.tmpl":                                  filepath.Join("configs", "mcp-config.json"),
-		"templates/java/stdio/examples/Example.java.tmpl":                                    filepath.Join("examples", "Example.java"),
+		"templates/java/stdio/pom.xml.tmpl":                                      "pom.xml",
+		fmt.Sprintf("templates/java/%s/src/main/java/Main.java.tmpl", transport): filepath.Join("src", "main", "java", pkgPath, "Main.java"),
+		"templates/java/stdio/src/main/java/handlers/MCPHandler.java.tmpl":       filepath.Join("src", "main", "java", pkgPath, "handlers", "MCPHandler.java"),
+		"templates/java/stdio/src/main/java/resources/Registry.java.tmpl":        filepath.Join("src", "main", "java", pkgPath, "resources", "Registry.java"),
+		"templates/java/stdio/README.md.tmpl":                                    "README.md",
+		"templates/java/stdio/configs/mcp-config.json.tmpl":                      filepath.Join("configs", "mcp-config.json"),
+		"templates/java/stdio/examples/Example.java.tmpl":                        filepath.Join("examples", "Example.java"),
 	}
 	if data.Config.Docker {
 		m["templates/java/stdio/Dockerfile.tmpl"] = "Dockerfile"

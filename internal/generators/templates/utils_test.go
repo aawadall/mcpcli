@@ -35,3 +35,23 @@ func TestTemplateHelpers(t *testing.T) {
 		}
 	}
 }
+
+func TestBaseTemplateMapRestTransport(t *testing.T) {
+	cfg := &core.ProjectConfig{Transport: "rest"}
+	data := cfg.GetTemplateData()
+	expected := map[string]string{
+		"go":         "templates/go/http/cmd/server/main.go.tmpl",
+		"javascript": "templates/node/http/src/index.js.tmpl",
+		"python":     "templates/python/http/src/main.py.tmpl",
+		"java":       "templates/java/http/src/main/java/Main.java.tmpl",
+	}
+	for lang, path := range expected {
+		m, err := BaseTemplateMap(lang, data)
+		if err != nil {
+			t.Fatalf("map for %s: %v", lang, err)
+		}
+		if _, ok := m[path]; !ok {
+			t.Errorf("expected %s to map to %s", lang, path)
+		}
+	}
+}
