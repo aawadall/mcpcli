@@ -14,7 +14,7 @@ import (
 )
 
 func writeConfig(t *testing.T, dir string) string {
-	cfg := &core.MCPConfig{Name: "test", Version: "0.4.2", Transport: core.Transport{Type: "stdio", Options: map[string]any{"command": "true"}}}
+	cfg := &core.MCPConfig{Name: "test", Version: "0.4.1", Transport: core.Transport{Type: "stdio", Options: map[string]any{"command": "true"}}}
 	data, err := json.Marshal(cfg)
 	if err != nil {
 		t.Fatal(err)

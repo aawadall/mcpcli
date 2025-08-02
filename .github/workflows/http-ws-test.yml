@@ -1,0 +1,83 @@
+name: HTTP and WebSocket Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22.7'
+
+      - name: Install websocat
+        run: |
+          curl -L https://github.com/vi/websocat/releases/download/v1.11.0/websocat.x86_64-unknown-linux-musl -o websocat
+          chmod +x websocat
+          sudo mv websocat /usr/local/bin/websocat
+
+      - name: Build CLI
+        run: go build -o mcpcli ./cmd/mcpcli
+
+      - name: Generate HTTP server
+        run: |
+          ./mcpcli generate http-server \
+            --language golang \
+            --transport rest \
+            --output ./http-server \
+            --force
+
+      - name: Build HTTP server
+        run: |
+          cd http-server
+          go mod tidy
+          go build ./...
+
+      - name: Start HTTP server
+        run: |
+          cd http-server/cmd/server
+          go build -o server .
+          ./server &
+          echo $! > /tmp/http_pid
+          sleep 2
+
+      - name: Test HTTP server
+        run: curl -X POST -d '{"method":"tools/list","id":1}' http://localhost:8080/mcp
+
+      - name: Stop HTTP server
+        run: kill $(cat /tmp/http_pid)
+
+      - name: Generate WebSocket server
+        run: |
+          ./mcpcli generate ws-server \
+            --language golang \
+            --transport websocket \
+            --output ./ws-server \
+            --force
+
+      - name: Build WebSocket server
+        run: |
+          cd ws-server
+          go mod tidy
+          go build ./...
+
+      - name: Start WebSocket server
+        run: |
+          cd ws-server/cmd/server
+          go build -o server .
+          ./server &
+          echo $! > /tmp/ws_pid
+          sleep 2
+
+      - name: Test WebSocket server
+        run: echo '{"method":"tools/list","id":1}' | websocat ws://localhost:8081/ws
+
+      - name: Stop WebSocket server
+        run: kill $(cat /tmp/ws_pid)
